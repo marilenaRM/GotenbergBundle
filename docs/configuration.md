@@ -9,10 +9,10 @@ The default configuration for the bundle looks like :
 Assuming you have the following client configured.
 
 <details>
-    <summary>app/config/framework.yaml</summary>
+    <summary>config/packages/framework.yaml</summary>
 
 ```yaml
-# app/config/framework.yaml
+# config/packages/framework.yaml
 
 framework:
     http_client:
@@ -26,10 +26,10 @@ framework:
 Then
 
 <details>
-    <summary>app/config/sensiolabs_gotenberg.yaml</summary>
+    <summary>config/packages/sensiolabs_gotenberg.yaml</summary>
 
 ```yaml
-# app/config/sensiolabs_gotenberg.yaml
+# config/packagesconfig/packages/sensiolabs_gotenberg.yaml
 
 # Default configuration for extension with alias: "sensiolabs_gotenberg"
 sensiolabs_gotenberg:

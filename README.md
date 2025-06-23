@@ -1,16 +1,22 @@
-# Gotenberg Bundle
+<picture>
+    <source media="(prefers-color-scheme: light)" srcset="./docs/images/gotenbergbundle.png" />
+    <img src="./docs/images/gotenbergbundle.dark.png" alt="SensioLabs Gotenberg Bundle for Symfony" width="100%" />
+</picture>
+<div align="center">
+    <pre>composer require sensiolabs/gotenberg-bundle</pre>
+</div>
+<div align="center">
 
 [![Latest Version](https://img.shields.io/github/release/sensiolabs/GotenbergBundle.svg?style=flat-square)](https://github.com/sensiolabs/GotenbergBundle/releases)
 [![Total Downloads](https://poser.pugx.org/sensiolabs/gotenberg-bundle/downloads)](https://packagist.org/packages/sensiolabs/gotenberg-bundle)
 [![Monthly Downloads](https://poser.pugx.org/sensiolabs/gotenberg-bundle/d/monthly)](https://packagist.org/packages/sensiolabs/gotenberg-bundle)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENCE)
-[![Static analysis](https://github.com/sensiolabs/GotenbergBundle/actions/workflows/static.yml/badge.svg?branch=main)](https://github.com/sensiolabs/GotenbergBundle/actions/workflows/static.yml?query=branch%3Amain)
-[![Tests](https://github.com/sensiolabs/GotenbergBundle/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/sensiolabs/GotenbergBundle/actions/workflows/tests.yml?query=branch%3Amain)
+[![Static analysis](https://github.com/sensiolabs/GotenbergBundle/actions/workflows/static.yml/badge.svg?branch=1.x)](https://github.com/sensiolabs/GotenbergBundle/actions/workflows/static.yml?query=branch%3A1.x)
+[![Tests](https://github.com/sensiolabs/GotenbergBundle/actions/workflows/tests.yml/badge.svg?branch=1.x)](https://github.com/sensiolabs/GotenbergBundle/actions/workflows/tests.yml?query=branch%3A1.x)
 
-> [!WARNING]  
-> This Bundle is experimental and subject to change in a future release.
+</div>
 
-## What is it?
+## Generate PDFs and screenshots with Symfony!
 
 This bundle allows you to generate, stream and save PDF locally from URL, HTML,
 Markdown or any Office file. Different options are available depending on the source.
@@ -18,7 +24,29 @@ Markdown or any Office file. Different options are available depending on the so
 It also helps you to generate, stream and save images locally from URL, HTML and
 Markdown by taking a screenshot.
 
+> [!NOTE]
+> This bundle interacts with the amazing [Gotenberg](https://gotenberg.dev/docs/getting-started/installation) API which
+> is used under the hood.
+
+📦 [How to install](#how-to-install)
+
+⭐ [Basic Usage](#basic-usage)
+
+🌟 [Advanced Usage](#advanced-usage)
+
+🔎 [Profiler](#profiler)
+
+🙋 [FAQ](#faq)
+
+❤️ [Credits](#credits)
+
+📃 [Licence](#licence)
+
 ## How to install
+
+> [!NOTE]
+> You first need to install and configure [Gotenberg 8.x](https://gotenberg.dev/docs/getting-started/installation) by
+> yourself.
 
 Install the bundle using composer:
 
@@ -26,24 +54,16 @@ Install the bundle using composer:
 composer require sensiolabs/gotenberg-bundle
 ```
 
-> [!NOTE]
-> This bundle interacts with [Gotenberg 8.x](https://gotenberg.dev/docs/getting-started/installation) which is used
-> under the hood.
-
 ### With Symfony Flex
 
 If you accept the Symfony Flex recipe during installation:
-* The bundle will be automatically registered. 
-* A configuration skeleton file will be created. 
-* Docker Compose will be updated with a new gotenberg service. 
+* The bundle will be automatically registered.
+* A configuration skeleton file will be created.
+* Docker Compose will be updated with a new gotenberg service.
 * The `.env` file will be updated with a `GOTENBERG_DSN` value pointing to `gotenberg:3000`. You can update this value
   if your Gotenberg instance is hosted elsewhere.
 
 ### Without Symfony Flex
-
-> [!NOTE]
-> You first need to install and configure [Gotenberg 8.x](https://gotenberg.dev/docs/getting-started/installation) by 
-> yourself.
 
 Manually enable the bundle by adding it to the list of registered bundles in your `config/bundles.php` file:
 
@@ -54,6 +74,21 @@ return [
     // ...
     SensioLabs\GotenbergBundle\SensioLabsGotenbergBundle::class => ['all' => true],
 ];
+```
+
+Create a configuration and adapt to your needs:
+
+```yaml
+# ./config/packages/sensiolabs_gotenberg.yaml
+
+framework:
+    http_client:
+        scoped_clients:
+            gotenberg.client:
+                base_uri: 'http://gotenberg:3000'
+
+sensiolabs_gotenberg:
+    http_client: 'gotenberg.client'
 ```
 
 ## Basic Usage
@@ -93,8 +128,8 @@ class YourController
 
 #### Twig
 
-> [!WARNING]  
-> Every Twig template you pass to Gotenberg must have the following structure.  
+> [!WARNING]
+> Every Twig template you pass to Gotenberg must have the following structure.
 > Even Header or Footer parts.
 > ```html
 > <!DOCTYPE html>
@@ -133,7 +168,7 @@ If a template needs to link to a static asset (e.g. an image), this bundle
 provides a `{{ gotenberg_asset() }}` Twig function to generate the correct
 path AND add it to the builder automatically.
 
-This function work as [asset() Twig function](https://symfony.com/doc/current/templates.html#linking-to-css-javascript-and-image-assets) 
+This function work as [asset() Twig function](https://symfony.com/doc/current/templates.html#linking-to-css-javascript-and-image-assets)
 and fetch your assets in the `assets` folder of your application.
 If your files are in another folder, you can override the default value of ``assets_directory``
 in your configuration file ``config/sensiolabs_gotenberg.yml``. The path provided
@@ -219,7 +254,7 @@ class YourController
 > [!TIP]
 > For more information go to [Gotenberg documentations](https://gotenberg.dev/docs/routes#screenshots-route).
 
-### Advanced Usage
+## Advanced Usage
 
 1. [Configuration](./docs/configuration.md)
 2. [Processing (saving for example)](./docs/processing.md)
@@ -228,13 +263,13 @@ class YourController
 5. [Async & Webhooks](./docs/webhook.md)
 6. [Working with fonts](./docs/fonts.md)
 
-#### PDF
+### PDF
 
 1. [Add header / footer](./docs/pdf/header-footer.md)
 2. [HTML Builder](./docs/pdf/html-builder.md)
 3. [Markdown Builder](./docs/pdf/markdown-builder.md)
 4. [Url Builder](./docs/pdf/url-builder.md)
-5. [Office Builder](./docs/pdf/office-builder.md) (available extensions for conversion below)  
+5. [Office Builder](./docs/pdf/office-builder.md) (available extensions for conversion below)
     `123`, `602`, `abw`, `bib`, `bmp`, `cdr`, `cgm`, `cmx`, `csv`, `cwk`, `dbf`, `dif`, `doc`, `docm`,
     `docx`, `dot`, `dotm`, `dotx`, `dxf`, `emf`, `eps`, `epub`, `fodg`, `fodp`, `fods`, `fodt`, `fopd`,
     `gif`, `htm`, `html`, `hwp`, `jpeg`, `jpg`, `key`, `ltx`, `lwp`, `mcw`, `met`, `mml`, `mw`, `numbers`,
@@ -251,28 +286,21 @@ class YourController
 9. [Flatten Builder](./docs/pdf/flatten-builder.md)
 10. [PDF customization](./docs/pdf/customization.md) (available for HTML, Markdown and Url builder)
 
-#### Screenshot
+### Screenshot
 
 1. [HTML Builder](./docs/screenshot/html-builder.md)
 2. [Markdown Builder](./docs/screenshot/markdown-builder.md)
 3. [Url Builder](./docs/screenshot/url-builder.md)
 4. [Screenshot customization](./docs/screenshot/customization.md)
 
-### Profiler
+## Profiler
 
 Comes with a built-in profiler panel to help you during your development.
 
-## Credits
-
-This bundle was inspired by [Gotenberg PHP](https://github.com/gotenberg/gotenberg-php).
-- [Steven RENAUX](https://github.com/StevenRenaux)
-- [Adrien ROCHES](https://github.com/Neirda24)
-- [Hubert LENOIR](https://github.com/Jean-Beru)
-- [All Contributors](../../contributors)
-
-## Licence
-
-MIT License (MIT): see the [License File](LICENSE) for more details.
+<picture>
+    <source media="(prefers-color-scheme: light)" srcset="./docs/images/profiler.png" />
+    <img src="./docs/images/profiler.dark.png" alt="SensioLabs Gotenberg Bundle profiler" width="100%" />
+</picture>
 
 ## FAQ
 
@@ -296,20 +324,32 @@ MIT License (MIT): see the [License File](LICENSE) for more details.
     +             - '--chromium-ignore-certificate-errors'
     ```
 
-    It can also be because from Gotenberg <abbr title="Point of View">PoV</abbr> the 
+    It can also be because from Gotenberg <abbr title="Point of View">PoV</abbr> the
     URL of your Symfony app is not reachable.
     Let's say you are using [symfony CLI](https://symfony.com/download) to run your
-    project locally with Gotenberg running in Docker. You need to configure the 
+    project locally with Gotenberg running in Docker. You need to configure the
     `request_context` like so:
 
     ```diff
     --- a/config/packages/gotenberg.yaml
     +++ b/config/packages/gotenberg.yaml
     @@ -6,5 +6,5 @@ framework:
-     
+
     sensiolabs_gotenberg:
         http_client: 'gotenberg.client'
-    +       request_context:
-    +       base_uri: 'http://host.docker.internal:8000' # 8000 is the port Symfony CLI is running my app on.
+    +    request_context:
+    +        base_uri: 'http://host.docker.internal:8000' # 8000 is the port Symfony CLI is running my app on.
     ```
 </details>
+
+## Credits
+
+This bundle was inspired by [Gotenberg PHP](https://github.com/gotenberg/gotenberg-php).
+- [Steven RENAUX](https://github.com/StevenRenaux)
+- [Adrien ROCHES](https://github.com/Neirda24)
+- [Hubert LENOIR](https://github.com/Jean-Beru)
+- [All Contributors](../../contributors)
+
+## Licence
+
+MIT License (MIT): see the [License File](LICENSE) for more details.
