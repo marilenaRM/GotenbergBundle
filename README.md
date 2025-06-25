@@ -36,6 +36,8 @@ Markdown by taking a screenshot.
 
 🔎 [Profiler](#profiler)
 
+✅ [Testing](#testing)
+
 🙋 [FAQ](#faq)
 
 ❤️ [Credits](#credits)
@@ -57,6 +59,7 @@ composer require sensiolabs/gotenberg-bundle
 ### With Symfony Flex
 
 If you accept the Symfony Flex recipe during installation:
+
 * The bundle will be automatically registered.
 * A configuration skeleton file will be created.
 * Docker Compose will be updated with a new gotenberg service.
@@ -168,8 +171,9 @@ If a template needs to link to a static asset (e.g. an image), this bundle
 provides a `{{ gotenberg_asset() }}` Twig function to generate the correct
 path AND add it to the builder automatically.
 
-This function work as [asset() Twig function](https://symfony.com/doc/current/templates.html#linking-to-css-javascript-and-image-assets)
-and fetch your assets in the `assets` folder of your application.
+This function work as
+[asset() Twig function](https://symfony.com/doc/current/templates.html#linking-to-css-javascript-and-image-assets) and
+fetch your assets in the `assets` folder of your application.
 If your files are in another folder, you can override the default value of ``assets_directory``
 in your configuration file ``config/sensiolabs_gotenberg.yml``. The path provided
 can be relative as well as absolute.
@@ -223,6 +227,7 @@ class YourController
     }
 }
 ```
+
 #### Twig
 
 After injecting ``GotenbergScreenshotInterface`` you simply need to call the method
@@ -270,16 +275,33 @@ class YourController
 3. [Markdown Builder](./docs/pdf/markdown-builder.md)
 4. [Url Builder](./docs/pdf/url-builder.md)
 5. [Office Builder](./docs/pdf/office-builder.md) (available extensions for conversion below)
-    `123`, `602`, `abw`, `bib`, `bmp`, `cdr`, `cgm`, `cmx`, `csv`, `cwk`, `dbf`, `dif`, `doc`, `docm`,
-    `docx`, `dot`, `dotm`, `dotx`, `dxf`, `emf`, `eps`, `epub`, `fodg`, `fodp`, `fods`, `fodt`, `fopd`,
-    `gif`, `htm`, `html`, `hwp`, `jpeg`, `jpg`, `key`, `ltx`, `lwp`, `mcw`, `met`, `mml`, `mw`, `numbers`,
-    `odd`, `odg`, `odm`, `odp`, `ods`, `odt`, `otg`, `oth`, `otp`, `ots`, `ott`, `pages`, `pbm`, `pcd`,
-    `pct`, `pcx`, `pdb`, `pdf`, `pgm`, `png`, `pot`, `potm`, `potx`, `ppm`, `pps`, `ppt`, `pptm`, `pptx`,
-    `psd`, `psw`, `pub`, `pwp`, `pxl`, `ras`, `rtf`, `sda`, `sdc`, `sdd`, `sdp`, `sdw`, `sgl`, `slk`,
-    `smf`, `stc`, `std`, `sti`, `stw`, `svg`, `svm`, `swf`, `sxc`, `sxd`, `sxg`, `sxi`, `sxm`, `sxw`,
-    `tga`, `tif`, `tiff`, `txt`, `uof`, `uop`, `uos`, `uot`, `vdx`, `vor`, `vsd`, `vsdm`, `vsdx`, `wb2`,
-    `wk1`, `wks`, `wmf`, `wpd`, `wpg`, `wps`, `xbm`, `xhtml`, `xls`, `xlsb`, `xlsm`, `xlsx`, `xlt`, `xltm`,
-    `xltx`, `xlw`, `xml`, `xpm`, `zabw`
+
+   📝 `doc`, `docx`, `docm`, `dot`, `dotx`, `dotm`, `odt`, `ott`, `sdw`, `stw`, `sxw`, `sxg`, `fodt`, `rtf`, `txt`,
+
+   `abw`, `zabw`, `cwk`, `psw`, `lwp`, `mcw`, `wpd`, `wps`, `pages`, `hwp`, `uof`, `uot`
+
+   📊 `xls`, `xlsx`, `xlsm`, `xlsb`, `xlt`, `xltx`, `xltm`, `xlw`, `ods`, `ots`, `sdc`, `stc`, `sxc`, `uos`, `csv`,
+
+   `dif`, `slk`, `123`, `wk1`, `wks`, `wb2`
+
+   📽️ `ppt`, `pptx`, `pptm`, `pot`, `potx`, `potm`, `pps`, `odp`, `otp`, `sdd`, `sdp`, `sxi`, `sti`, `uop`, `key`
+
+   🖼️ `svg`, `cdr`, `odg`, `otg`, `sda`, `sxd`, `std`, `svm`, `fodg`, `eps`, `emf`, `wmf`, `dxf`, `cgm`, `cmx`, `met`,
+
+   `mml`, `vdx`, `vsd`, `vsdx`, `vsdm`, `vor`, `bmp`, `gif`, `jpeg`, `jpg`, `png`, `tif`, `tiff`, `pbm`, `pgm`,
+
+   `ppm`, `ras`, `pcx`, `pcd`, `pct`, `psd`, `tga`, `xbm`, `xpm`, `wpg`
+
+   📚 `epub`, `pdf`, `odd`, `odm`, `oth`, `html`, `htm`, `xhtml`, `xml`, `pub`, `pwp`, `bib`, `ltx`
+
+   🗃️ `dbf`, `pdb`, `wb2`, `mw`
+
+   🧩 `swf`, `smf`
+
+   🏗️ `dxf`, `vdx`, `vsd`, `vsdx`, `vsdm`
+
+   🧪 `sxm`, `mml`, `ltx`, `mw`
+
 6. [Merge Builder](./docs/pdf/merge-builder.md)
 7. [Convert Builder](./docs/pdf/convert-builder.md)
 8. [Split Builder](./docs/pdf/split-builder.md)
@@ -302,6 +324,13 @@ Comes with a built-in profiler panel to help you during your development.
     <img src="./docs/images/profiler.dark.png" alt="SensioLabs Gotenberg Bundle profiler" width="100%" />
 </picture>
 
+## Testing
+
+This bundle provides classes to assist with testing when using [PHPUnit](https://phpunit.de/).
+
+1. [Creating mock results](./docs/testing.md#creating-mock-results)
+2. [Builder Testing Support](./docs/testing.md#builder-testing-support)
+
 ## FAQ
 
 <details>
@@ -312,39 +341,41 @@ Comes with a built-in profiler panel to help you during your development.
     the SSL is a local provided one. Then Chromium won't be able to authorize access
     to the website. To fix this you can update your Gotenberg Docker service as followed:
 
-    ```diff
-    --- a/compose.yaml
-    +++ b/compose.yaml
-    @@ -1,6 +1,9 @@
-    services:
-         gotenberg:
-             image: 'gotenberg/gotenberg:8'
-    +         command:
-    +             - 'gotenberg'
-    +             - '--chromium-ignore-certificate-errors'
-    ```
+```diff
+--- a/compose.yaml
++++ b/compose.yaml
+@@ -1,6 +1,9 @@
+services:
+     gotenberg:
+         image: 'gotenberg/gotenberg:8'
++         command:
++             - 'gotenberg'
++             - '--chromium-ignore-certificate-errors'
+```
 
-    It can also be because from Gotenberg <abbr title="Point of View">PoV</abbr> the
-    URL of your Symfony app is not reachable.
-    Let's say you are using [symfony CLI](https://symfony.com/download) to run your
-    project locally with Gotenberg running in Docker. You need to configure the
-    `request_context` like so:
+It can also be because from Gotenberg <abbr title="Point of View">PoV</abbr> the
+URL of your Symfony app is not reachable.
+Let's say you are using [symfony CLI](https://symfony.com/download) to run your
+project locally with Gotenberg running in Docker. You need to configure the
+`request_context` like so:
 
-    ```diff
-    --- a/config/packages/gotenberg.yaml
-    +++ b/config/packages/gotenberg.yaml
-    @@ -6,5 +6,5 @@ framework:
+```diff
+--- a/config/packages/gotenberg.yaml
++++ b/config/packages/gotenberg.yaml
+@@ -6,5 +6,5 @@ framework:
 
-    sensiolabs_gotenberg:
-        http_client: 'gotenberg.client'
-    +    request_context:
-    +        base_uri: 'http://host.docker.internal:8000' # 8000 is the port Symfony CLI is running my app on.
-    ```
+sensiolabs_gotenberg:
+    http_client: 'gotenberg.client'
++    request_context:
++        base_uri: 'http://host.docker.internal:8000' # 8000 is the port Symfony CLI is running my app on.
+```
+
 </details>
 
 ## Credits
 
 This bundle was inspired by [Gotenberg PHP](https://github.com/gotenberg/gotenberg-php).
+
 - [Steven RENAUX](https://github.com/StevenRenaux)
 - [Adrien ROCHES](https://github.com/Neirda24)
 - [Hubert LENOIR](https://github.com/Jean-Beru)
