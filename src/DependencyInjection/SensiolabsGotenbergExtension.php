@@ -5,6 +5,7 @@ namespace Sensiolabs\GotenbergBundle\DependencyInjection;
 use Sensiolabs\GotenbergBundle\Builder\AbstractBuilder;
 use Sensiolabs\GotenbergBundle\Builder\Behaviors\WebhookTrait;
 use Sensiolabs\GotenbergBundle\Builder\BuilderInterface;
+use Sensiolabs\GotenbergBundle\Version\VersionFetcherInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -17,6 +18,7 @@ use Symfony\Component\Routing\RequestContext;
  *
  * @phpstan-type SensiolabsGotenbergConfiguration array{
  *      assets_directory: string,
+ *      version?: string,
  *      http_client?: string,
  *      request_context?: array{base_uri?: string},
  *      controller_listener: bool,
@@ -88,6 +90,18 @@ class SensiolabsGotenbergExtension extends Extension
         // HTTP Client
         $container->setAlias('sensiolabs_gotenberg.http_client', new Alias($defaultConfiguration['http_client'] ?? 'http_client', false));
 
+        // Version
+        if (null !== $defaultConfiguration['version']) {
+            $container->getDefinition('sensiolabs_gotenberg.static_version_fetcher')
+                ->replaceArgument(0, $defaultConfiguration['version'])
+            ;
+            $container->setAlias('sensiolabs_gotenberg.version_fetcher', new Alias('sensiolabs_gotenberg.static_version_fetcher'));
+        } else {
+            $container->setAlias('sensiolabs_gotenberg.version_fetcher', new Alias('sensiolabs_gotenberg.http_version_fetcher'));
+        }
+
+        $container->setAlias(VersionFetcherInterface::class, new Alias('sensiolabs_gotenberg.version_fetcher'));
+
         // Request context
         $baseUri = $defaultConfiguration['request_context']['base_uri'] ?? null;
         if (null !== $baseUri) {
@@ -111,7 +125,7 @@ class SensiolabsGotenbergExtension extends Extension
         if ($container->getParameter('kernel.debug') === true) {
             $loader->load('debug.php');
             $container->getDefinition('sensiolabs_gotenberg.data_collector')
-                ->replaceArgument(4, $defaultConfiguration['default_options'])
+                ->replaceArgument(5, $defaultConfiguration['default_options'])
             ;
         }
 

@@ -28,6 +28,16 @@ class Configuration implements ConfigurationInterface
                     ->info('Base directory will be used for assets, files, markdown')
                     ->defaultValue('%kernel.project_dir%/assets')
                 ->end()
+                ->scalarNode('version')
+                    ->info('Version of Gotenberg')
+                    ->defaultValue(null)
+                    ->validate()
+                        ->ifTrue(static function (string $version): bool {
+                            return version_compare($version, '8', '<');
+                        })
+                        ->thenInvalid('Invalid version %s, supported versions are >= 8.0.0')
+                    ->end()
+                ->end()
                 ->scalarNode('http_client')
                     ->info('HTTP Client reference to use. (Must have a base_uri)')
                     ->isRequired()
