@@ -2,16 +2,18 @@
 
 $finder = (new PhpCsFixer\Finder())
     ->in([
-        __DIR__ . '/bin',
-        __DIR__ . '/config',
-        __DIR__ . '/docs',
-        __DIR__ . '/src',
-        __DIR__ . '/tests',
+        __DIR__.'/.dagger/src',
+        __DIR__.'/bin',
+        __DIR__.'/config',
+        __DIR__.'/docs',
+        __DIR__.'/src',
+        __DIR__.'/tests',
     ])
     ->notPath('var')
 ;
 
 return (new PhpCsFixer\Config())
+    ->setUnsupportedPhpVersionAllowed(true)
     ->setParallelConfig(PhpCsFixer\Runner\Parallel\ParallelConfigFactory::detect())
     ->setUsingCache(false)
     ->setRiskyAllowed(true)
