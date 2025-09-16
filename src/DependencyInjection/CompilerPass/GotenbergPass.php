@@ -27,8 +27,8 @@ final class GotenbergPass implements CompilerPassInterface
                 ->addTag('container.service_subscriber')
             ;
 
+            /** @var string $class */
             $class = $serviceDefinition->getClass();
-
             $type = $this->builderStack->getBuilders()[$class];
 
             $builderPerType[$type] ??= [];
