@@ -13,8 +13,6 @@ use Sensiolabs\GotenbergBundle\Builder\Pdf\UrlPdfBuilder;
 use Sensiolabs\GotenbergBundle\Builder\Screenshot\HtmlScreenshotBuilder;
 use Sensiolabs\GotenbergBundle\Builder\Screenshot\MarkdownScreenshotBuilder;
 use Sensiolabs\GotenbergBundle\Builder\Screenshot\UrlScreenshotBuilder;
-use Sensiolabs\GotenbergBundle\DependencyInjection\BuilderStack;
-use Sensiolabs\GotenbergBundle\DependencyInjection\CompilerPass\GotenbergPass;
 use Sensiolabs\GotenbergBundle\DependencyInjection\SensiolabsGotenbergExtension;
 use Sensiolabs\GotenbergBundle\Enumeration\EmulatedMediaType;
 use Sensiolabs\GotenbergBundle\Enumeration\ImageResolutionDPI;
@@ -36,10 +34,7 @@ final class SensiolabsGotenbergExtensionTest extends KernelTestCase
 
     private function getExtension(): SensiolabsGotenbergExtension
     {
-        $builderStack = new BuilderStack();
-
         $extension = new SensiolabsGotenbergExtension();
-        $extension->setBuilderStack($builderStack);
 
         $extension->registerBuilder(ConvertPdfBuilder::class);
         $extension->registerBuilder(HtmlPdfBuilder::class);
@@ -52,8 +47,6 @@ final class SensiolabsGotenbergExtensionTest extends KernelTestCase
         $extension->registerBuilder(HtmlScreenshotBuilder::class);
         $extension->registerBuilder(MarkdownScreenshotBuilder::class);
         $extension->registerBuilder(UrlScreenshotBuilder::class);
-
-        $this->getContainerBuilder()->addCompilerPass(new GotenbergPass($builderStack));
 
         return $extension;
     }
