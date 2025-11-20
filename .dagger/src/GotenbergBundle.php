@@ -43,7 +43,7 @@ class GotenbergBundle
         string $phpVersion = '8.4',
     ): Container {
         $aptCache = dag()->cacheVolume("apt-cache-{$phpVersion}");
-        $composerBin = dag()->container()->from('composer/composer')->file('/usr/bin/composer');
+        $composerBin = dag()->container()->from('composer/composer:latest-bin')->file('/composer');
 
         return dag()
             ->container()
@@ -64,19 +64,26 @@ class GotenbergBundle
     private function symfonyContainer(
         Directory $source,
         string $phpVersion = '8.4',
-        string $symfonyVersion = '7.3',
+        string $symfonyVersion = '7.3.*',
+        string $minimumStability = 'stable',
         Container|null $phpContainer = null,
     ): Container {
         $phpContainer ??= $this->phpContainer($source, $phpVersion);
 
-        $vendorCache = dag()->cacheVolume("php-{$phpVersion}-symfony-{$symfonyVersion}-vendor-cache");
+        $minimumStability = trim($minimumStability);
+        if ('' === $minimumStability) {
+            $minimumStability = 'stable';
+        }
+
+        $composerCache = dag()->cacheVolume("php-{$phpVersion}-symfony-{$symfonyVersion}-composer-cache");
 
         return $phpContainer
-            ->withMountedCache('/GotenbergBundle/vendor', $vendorCache)
-            ->withEnvVariable('SYMFONY_REQUIRE', $symfonyVersion)
+            ->withMountedCache('/root/.composer/cache/files', $composerCache)
             ->withExec(['composer', 'global', 'config', '--no-plugins', 'allow-plugins.symfony/flex', 'true'])
             ->withExec(['composer', 'global', 'require', 'symfony/flex'])
-            ->withExec(['composer', 'update'])
+            ->withExec(['composer', 'config', 'extra.symfony.require', $symfonyVersion])
+            ->withExec(['composer', 'config', 'minimum-stability', $minimumStability])
+            ->withExec(['composer', 'update', '--prefer-dist', '--no-progress'])
         ;
     }
 
@@ -89,7 +96,7 @@ class GotenbergBundle
         $matrix = json_decode(file_get_contents(__DIR__.'/matrix-versions.json'), associative: true);
 
         foreach ($matrix as $row) {
-            yield [$row['symfony-version'], $row['php']];
+            yield [$row['symfony-version'], $row['php'], $row['minimum-stability'] ?? 'stable'];
         }
     }
 
@@ -115,10 +122,11 @@ class GotenbergBundle
         Directory $source,
 
         string $phpVersion = '8.4',
-        string $symfonyVersion = '7.3',
+        string $symfonyVersion = '7.3.*',
+        string $minimumStability = 'stable',
         Container|null $symfonyContainer = null,
     ): TestsGotenbergBundle {
-        $symfonyContainer ??= $this->symfonyContainer($source, $phpVersion, $symfonyVersion);
+        $symfonyContainer ??= $this->symfonyContainer($source, $phpVersion, $symfonyVersion, $minimumStability);
 
         return new TestsGotenbergBundle($symfonyContainer);
     }
@@ -132,8 +140,8 @@ class GotenbergBundle
     ): array {
         $tests = [];
 
-        foreach ($this->getMatrix() as [$symfonyVersion, $phpVersion]) {
-            $tests[] = async(fn () => $this->test($source, $phpVersion, $symfonyVersion)->all());
+        foreach ($this->getMatrix() as [$symfonyVersion, $phpVersion, $minimumStability]) {
+            $tests[] = async(fn () => $this->test($source, $phpVersion, $symfonyVersion, $minimumStability)->all());
         }
 
         $result = [];
