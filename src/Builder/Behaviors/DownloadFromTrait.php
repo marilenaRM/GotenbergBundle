@@ -4,6 +4,7 @@ namespace Sensiolabs\GotenbergBundle\Builder\Behaviors;
 
 use Sensiolabs\GotenbergBundle\Builder\Attributes\NormalizeGotenbergPayload;
 use Sensiolabs\GotenbergBundle\Builder\Attributes\WithConfigurationNode;
+use Sensiolabs\GotenbergBundle\Builder\Behaviors\Dependencies\LoggerAwareTrait;
 use Sensiolabs\GotenbergBundle\Builder\BodyBag;
 use Sensiolabs\GotenbergBundle\Builder\Util\NormalizerFactory;
 use Sensiolabs\GotenbergBundle\Builder\Util\ValidatorFactory;
@@ -12,6 +13,8 @@ use Sensiolabs\GotenbergBundle\NodeBuilder\ScalarNodeBuilder;
 
 trait DownloadFromTrait
 {
+    use LoggerAwareTrait;
+
     abstract protected function getBodyBag(): BodyBag;
 
     /**
@@ -38,6 +41,8 @@ trait DownloadFromTrait
 
             return $this;
         }
+
+        $this->logWarningIfVersionIs('<', '8.10', 'The option downloadFrom is not available.');
 
         $value = $this->getBodyBag()->get('downloadFrom', []);
 

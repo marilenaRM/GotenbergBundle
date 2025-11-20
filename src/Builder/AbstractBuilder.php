@@ -3,12 +3,15 @@
 namespace Sensiolabs\GotenbergBundle\Builder;
 
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 use Sensiolabs\GotenbergBundle\Builder\Attributes\NormalizeGotenbergPayload;
+use Sensiolabs\GotenbergBundle\Builder\Behaviors\Dependencies\LoggerAwareTrait;
 use Sensiolabs\GotenbergBundle\Builder\Result\GotenbergAsyncResult;
 use Sensiolabs\GotenbergBundle\Builder\Result\GotenbergFileResult;
 use Sensiolabs\GotenbergBundle\Builder\Util\NormalizerFactory;
 use Sensiolabs\GotenbergBundle\Client\GotenbergClientInterface;
 use Sensiolabs\GotenbergBundle\Exception\InvalidNormalizerException;
+use Sensiolabs\GotenbergBundle\Exception\VersionCompatibilityException;
 use Sensiolabs\GotenbergBundle\Processor\NullProcessor;
 use Sensiolabs\GotenbergBundle\Processor\ProcessorInterface;
 use Sensiolabs\GotenbergBundle\Version\Version;
@@ -23,6 +26,7 @@ use Symfony\Contracts\Service\ServiceSubscriberTrait;
  */
 abstract class AbstractBuilder implements BuilderAsyncInterface, BuilderFileInterface, ServiceSubscriberInterface
 {
+    use LoggerAwareTrait;
     use ServiceSubscriberTrait;
 
     protected ContainerInterface $container;
@@ -147,11 +151,19 @@ abstract class AbstractBuilder implements BuilderAsyncInterface, BuilderFileInte
         return $this->getVersionFetcher()->get();
     }
 
+    protected function introducedIn(string|Version $version): void
+    {
+        if ($this->getVersion()->isLowerThan($version)) {
+            throw VersionCompatibilityException::requires('>=', $version, 'This builder is not available.');
+        }
+    }
+
     /**
      * @return \Generator<int, array<string, string>>
      */
     private function normalizePayloadBody(): \Generator
     {
+        /** @var array<string, (\Closure(string, mixed, Version=, LoggerInterface|null=): list<array<string, string>>)> $normalizers */
         $normalizers = [];
 
         $reflection = new \ReflectionClass(static::class);
@@ -168,6 +180,7 @@ abstract class AbstractBuilder implements BuilderAsyncInterface, BuilderFileInte
         }
 
         $version = $this->getVersion();
+        $logger = $this->getLogger();
 
         foreach ($this->getBodyBag()->all() as $key => $value) {
             $normalizer = $normalizers[$key] ?? NormalizerFactory::noop();
@@ -176,7 +189,7 @@ abstract class AbstractBuilder implements BuilderAsyncInterface, BuilderFileInte
                 throw new InvalidNormalizerException(\sprintf('Normalizer "%s" is not a valid callable function.', $key));
             }
 
-            yield from $normalizer($key, $value, $version);
+            yield from $normalizer($key, $value, $version, $logger);
         }
     }
 }

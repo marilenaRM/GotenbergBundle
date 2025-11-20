@@ -67,6 +67,8 @@ final class SplitPdfBuilder extends AbstractBuilder
 
     protected function validatePayloadBody(): void
     {
+        $this->introducedIn('8.15');
+
         if ($this->getBodyBag()->get('files') === null && $this->getBodyBag()->get('downloadFrom') === null) {
             throw new MissingRequiredFieldException('At least one PDF file is required.');
         }

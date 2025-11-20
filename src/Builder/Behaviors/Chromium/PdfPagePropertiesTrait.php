@@ -35,6 +35,8 @@ trait PdfPagePropertiesTrait
     #[WithConfigurationNode(new BooleanNodeBuilder('single_page'))]
     public function singlePage(bool $bool = true): static
     {
+        $this->logWarningIfVersionIs('<', '8.2.0', 'The singlePage option is not available.');
+
         $this->getBodyBag()->set('singlePage', $bool);
 
         return $this;
@@ -201,6 +203,8 @@ trait PdfPagePropertiesTrait
     #[WithConfigurationNode(new BooleanNodeBuilder('generate_document_outline'))]
     public function generateDocumentOutline(bool $bool = true): static
     {
+        $this->logWarningIfVersionIs('<', '8.14', 'The option generateDocumentOutline is not available.');
+
         $this->getBodyBag()->set('generateDocumentOutline', $bool);
 
         return $this;
@@ -284,6 +288,8 @@ trait PdfPagePropertiesTrait
     #[WithConfigurationNode(new BooleanNodeBuilder('generate_tagged_pdf'))]
     public function generateTaggedPdf(bool $bool = true): static
     {
+        $this->logWarningIfVersionIs('<', '8.21', 'The option generateTaggedPdf is not available.');
+
         $this->getBodyBag()->set('generateTaggedPdf', $bool);
 
         return $this;

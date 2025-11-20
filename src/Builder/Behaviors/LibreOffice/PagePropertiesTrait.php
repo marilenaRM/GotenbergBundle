@@ -4,6 +4,7 @@ namespace Sensiolabs\GotenbergBundle\Builder\Behaviors\LibreOffice;
 
 use Sensiolabs\GotenbergBundle\Builder\Attributes\NormalizeGotenbergPayload;
 use Sensiolabs\GotenbergBundle\Builder\Attributes\WithConfigurationNode;
+use Sensiolabs\GotenbergBundle\Builder\Behaviors\Dependencies\LoggerAwareTrait;
 use Sensiolabs\GotenbergBundle\Builder\BodyBag;
 use Sensiolabs\GotenbergBundle\Builder\Util\NormalizerFactory;
 use Sensiolabs\GotenbergBundle\Builder\Util\ValidatorFactory;
@@ -15,6 +16,8 @@ use Sensiolabs\GotenbergBundle\NodeBuilder\ScalarNodeBuilder;
 
 trait PagePropertiesTrait
 {
+    use LoggerAwareTrait;
+
     abstract protected function getBodyBag(): BodyBag;
 
     /**
@@ -25,6 +28,8 @@ trait PagePropertiesTrait
     #[WithConfigurationNode(new ScalarNodeBuilder('password'))]
     public function password(#[\SensitiveParameter] string $password): static
     {
+        $this->logWarningIfVersionIs('<', '8.10', 'The option password is not available.');
+
         $this->getBodyBag()->set('password', $password);
 
         return $this;
@@ -75,6 +80,8 @@ trait PagePropertiesTrait
     #[WithConfigurationNode(new BooleanNodeBuilder('do_not_export_form_fields'))]
     public function doNotExportFormFields(bool $bool = false): static
     {
+        $this->logWarningIfVersionIs('<', '8.3', 'The doNotExportFormFields option is not available.');
+
         $this->getBodyBag()->set('exportFormFields', $bool);
 
         return $this;
@@ -90,6 +97,8 @@ trait PagePropertiesTrait
     #[WithConfigurationNode(new BooleanNodeBuilder('allow_duplicate_field_names'))]
     public function allowDuplicateFieldNames(bool $bool = true): static
     {
+        $this->logWarningIfVersionIs('<', '8.8', 'The option allowDuplicateFieldNames is not available.');
+
         $this->getBodyBag()->set('allowDuplicateFieldNames', $bool);
 
         return $this;
@@ -105,6 +114,8 @@ trait PagePropertiesTrait
     #[WithConfigurationNode(new BooleanNodeBuilder('do_not_export_bookmarks'))]
     public function doNotExportBookmarks(bool $bool = false): static
     {
+        $this->logWarningIfVersionIs('<', '8.8', 'The option exportBookmarks is not available.');
+
         $this->getBodyBag()->set('exportBookmarks', $bool);
 
         return $this;
@@ -120,6 +131,8 @@ trait PagePropertiesTrait
     #[WithConfigurationNode(new BooleanNodeBuilder('export_bookmarks_to_pdf_destination'))]
     public function exportBookmarksToPdfDestination(bool $bool = true): static
     {
+        $this->logWarningIfVersionIs('<', '8.8', 'The option exportBookmarksToPdfDestination is not available.');
+
         $this->getBodyBag()->set('exportBookmarksToPdfDestination', $bool);
 
         return $this;
@@ -135,6 +148,8 @@ trait PagePropertiesTrait
     #[WithConfigurationNode(new BooleanNodeBuilder('export_placeholders'))]
     public function exportPlaceholders(bool $bool = true): static
     {
+        $this->logWarningIfVersionIs('<', '8.8', 'The option exportPlaceholders is not available.');
+
         $this->getBodyBag()->set('exportPlaceholders', $bool);
 
         return $this;
@@ -148,6 +163,8 @@ trait PagePropertiesTrait
     #[WithConfigurationNode(new BooleanNodeBuilder('export_notes'))]
     public function exportNotes(bool $bool = true): static
     {
+        $this->logWarningIfVersionIs('<', '8.8', 'The option exportNotes is not available.');
+
         $this->getBodyBag()->set('exportNotes', $bool);
 
         return $this;
@@ -161,6 +178,8 @@ trait PagePropertiesTrait
     #[WithConfigurationNode(new BooleanNodeBuilder('export_notes_pages'))]
     public function exportNotesPages(bool $bool = true): static
     {
+        $this->logWarningIfVersionIs('<', '8.8', 'The option exportNotesPages is not available.');
+
         $this->getBodyBag()->set('exportNotesPages', $bool);
 
         return $this;
@@ -174,6 +193,8 @@ trait PagePropertiesTrait
     #[WithConfigurationNode(new BooleanNodeBuilder('export_only_notes_pages'))]
     public function exportOnlyNotesPages(bool $bool = true): static
     {
+        $this->logWarningIfVersionIs('<', '8.8', 'The option exportOnlyNotesPages is not available.');
+
         $this->getBodyBag()->set('exportOnlyNotesPages', $bool);
 
         return $this;
@@ -187,6 +208,8 @@ trait PagePropertiesTrait
     #[WithConfigurationNode(new BooleanNodeBuilder('export_notes_in_margin'))]
     public function exportNotesInMargin(bool $bool = true): static
     {
+        $this->logWarningIfVersionIs('<', '8.8', 'The option exportNotesInMargin is not available.');
+
         $this->getBodyBag()->set('exportNotesInMargin', $bool);
 
         return $this;
@@ -200,6 +223,8 @@ trait PagePropertiesTrait
     #[WithConfigurationNode(new BooleanNodeBuilder('convert_ooo_target_to_pdf_target'))]
     public function convertOooTargetToPdfTarget(bool $bool = true): static
     {
+        $this->logWarningIfVersionIs('<', '8.8', 'The option convertOooTargetToPdfTarget is not available.');
+
         $this->getBodyBag()->set('convertOooTargetToPdfTarget', $bool);
 
         return $this;
@@ -213,6 +238,8 @@ trait PagePropertiesTrait
     #[WithConfigurationNode(new BooleanNodeBuilder('export_links_relative_fsys'))]
     public function exportLinksRelativeFsys(bool $bool = true): static
     {
+        $this->logWarningIfVersionIs('<', '8.8', 'The option exportLinksRelativeFsys is not available.');
+
         $this->getBodyBag()->set('exportLinksRelativeFsys', $bool);
 
         return $this;
@@ -226,6 +253,8 @@ trait PagePropertiesTrait
     #[WithConfigurationNode(new BooleanNodeBuilder('export_hidden_slides'))]
     public function exportHiddenSlides(bool $bool = true): static
     {
+        $this->logWarningIfVersionIs('<', '8.8', 'The option exportHiddenSlides is not available.');
+
         $this->getBodyBag()->set('exportHiddenSlides', $bool);
 
         return $this;
@@ -239,6 +268,8 @@ trait PagePropertiesTrait
     #[WithConfigurationNode(new BooleanNodeBuilder('skip_empty_pages'))]
     public function skipEmptyPages(bool $bool = true): static
     {
+        $this->logWarningIfVersionIs('<', '8.8', 'The option skipEmptyPages is not available.');
+
         $this->getBodyBag()->set('skipEmptyPages', $bool);
 
         return $this;
@@ -252,6 +283,8 @@ trait PagePropertiesTrait
     #[WithConfigurationNode(new BooleanNodeBuilder('add_original_document_as_stream'))]
     public function addOriginalDocumentAsStream(bool $bool = true): static
     {
+        $this->logWarningIfVersionIs('<', '8.8', 'The option addOriginalDocumentAsStream is not available.');
+
         $this->getBodyBag()->set('addOriginalDocumentAsStream', $bool);
 
         return $this;
@@ -265,6 +298,8 @@ trait PagePropertiesTrait
     #[WithConfigurationNode(new BooleanNodeBuilder('single_page_sheets'))]
     public function singlePageSheets(bool $bool = true): static
     {
+        $this->logWarningIfVersionIs('<', '8.4', 'The option singlePageSheets is not available.');
+
         $this->getBodyBag()->set('singlePageSheets', $bool);
 
         return $this;
@@ -291,6 +326,8 @@ trait PagePropertiesTrait
     #[WithConfigurationNode(new BooleanNodeBuilder('lossless_image_compression'))]
     public function losslessImageCompression(bool $bool = true): self
     {
+        $this->logWarningIfVersionIs('<', '8.7', 'The option losslessImageCompression is not available.');
+
         $this->getBodyBag()->set('losslessImageCompression', $bool);
 
         return $this;
@@ -306,6 +343,8 @@ trait PagePropertiesTrait
     #[WithConfigurationNode(new IntegerNodeBuilder('quality', min: 0, max: 100))]
     public function quality(int $quality): self
     {
+        $this->logWarningIfVersionIs('<', '8.8', 'The option quality is not available.');
+
         ValidatorFactory::quality($quality);
         $this->getBodyBag()->set('quality', $quality);
 
@@ -320,6 +359,8 @@ trait PagePropertiesTrait
     #[WithConfigurationNode(new BooleanNodeBuilder('reduce_image_resolution'))]
     public function reduceImageResolution(bool $bool = true): self
     {
+        $this->logWarningIfVersionIs('<', '8.7', 'The option reduceImageResolution is not available.');
+
         $this->getBodyBag()->set('reduceImageResolution', $bool);
 
         return $this;
@@ -333,6 +374,8 @@ trait PagePropertiesTrait
     #[WithConfigurationNode(new NativeEnumNodeBuilder('max_image_resolution', enumClass: ImageResolutionDPI::class))]
     public function maxImageResolution(ImageResolutionDPI|null $resolution): self
     {
+        $this->logWarningIfVersionIs('<', '8.8', 'The option maxImageResolution is not available.');
+
         if (!$resolution) {
             $this->getBodyBag()->unset('maxImageResolution');
         } else {
@@ -350,6 +393,8 @@ trait PagePropertiesTrait
     #[WithConfigurationNode(new BooleanNodeBuilder('update_indexes'))]
     public function doNotUpdateIndexes(bool $bool = false): self
     {
+        $this->logWarningIfVersionIs('<', '8.18', 'The option updateIndexes is not available.');
+
         $this->getBodyBag()->set('updateIndexes', $bool);
 
         return $this;

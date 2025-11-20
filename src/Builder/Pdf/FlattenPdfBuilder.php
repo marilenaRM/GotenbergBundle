@@ -56,6 +56,8 @@ final class FlattenPdfBuilder extends AbstractBuilder
 
     protected function validatePayloadBody(): void
     {
+        $this->introducedIn('8.16');
+
         if ($this->getBodyBag()->get('files') === null) {
             throw new MissingRequiredFieldException('At least one PDF file is required.');
         }
