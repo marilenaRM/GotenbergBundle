@@ -39,25 +39,7 @@ class Summary
         $this->builders[$type] ??= [];
         $this->builders[$type][$class->getShortName()] = $class;
 
-        $this->filenames[$class->getName()] = "{$type}/builders_api/{$class->getShortName()}.md";
-    }
-
-    public function extract(): string
-    {
-        $summary = "# Builders API\n\n";
-        ksort($this->builders);
-
-        foreach ($this->builders as $type => $builders) {
-            $summary .= '## '.ucfirst($type)."\n\n";
-            ksort($builders);
-
-            foreach ($builders as $builder) {
-                $summary .= "* [{$builder->getShortName()}](./{$this->getFilename($builder->getName())})\n";
-            }
-            $summary .= "\n";
-        }
-
-        return $summary;
+        $this->filenames[$class->getName()] = "{$type}/{$class->getShortName()}.md";
     }
 
     public function getFilename(string $className): string
@@ -104,11 +86,8 @@ class BuilderParser
         'getSubscribedServices',
     ];
 
-    private string $name;
-
     /**
      * @var array{
-     *     '@'?: ParsedDocBlock,
      *     'methods': array<string, array<string, ParsedDocBlock>>,
      * }
      */
@@ -122,6 +101,11 @@ class BuilderParser
     private array $methodsSignature = [];
 
     /**
+     * @var array<string, string>
+     */
+    private array $methodsLink = [];
+
+    /**
      * @param class-string<BuilderInterface> $builder
      */
     public function prepare(Summary $summary, string $type, string $builder): void
@@ -129,66 +113,35 @@ class BuilderParser
         $class = new ReflectionClass($builder);
         $summary->register($type, $class);
 
-        $this->name = $class->getShortName();
         $this->prepareBuilder($class);
+    }
+
+    /**
+     * @param ReflectionClass<BuilderInterface> $class
+     */
+    private function prepareBuilder(ReflectionClass $class): void
+    {
+        $this->parts = [
+            'methods' => [],
+        ];
+
+        $this->prepareBuilderFromClass($class);
+        $this->cleanBuilderFromClass($class);
+
+        foreach ($this->parts['methods']['@'] as $methodName => $parts) {
+            $package = $parts['package'] ?? '@';
+
+            if ('@' !== $package) {
+                $this->parts['methods'][$package][$methodName] = $parts;
+                unset($this->parts['methods']['@'][$methodName]);
+            }
+        }
     }
 
     public function extract(): string
     {
-        $markdown = "# {$this->name}\n\n";
-        $renderDescription = static fn (array $parts) => trim(implode('<br />', $parts), "\ \n\r\t\v\0");
-
-        /**
-         * @param list<string> $seeList
-         */
-        $renderSee = static function (array $seeList): string {
-            if ([] === $seeList) {
-                return '';
-            }
-
-            $lastKey = array_key_last($seeList);
-
-            $markdown = '> [!TIP]';
-            foreach ($seeList as $key => $see) {
-                $markdown .= "\n> See: [{$see}]({$see})";
-
-                $isLast = $lastKey === $key;
-
-                if (false === $isLast) {
-                    $markdown .= '<br />';
-                }
-            }
-
-            return rtrim($markdown, '<br />');
-        };
-
-        /**
-         * @param ParsedDocBlock $parts
-         */
-        $renderParts = static function (array $parts) use ($renderDescription, $renderSee): string {
-            $markdown = '';
-
-            $description = $renderDescription($parts['description']);
-            if ('' !== $description) {
-                $markdown .= $description."\n";
-            }
-
-            $see = $renderSee($parts['tags']['see'] ?? []);
-            if ('' !== $see) {
-                if ('' !== $markdown) {
-                    $markdown .= "\n";
-                }
-
-                $markdown .= $see."\n";
-            }
-
-            return $markdown;
-        };
-
-        if (isset($this->parts['@'])) {
-            $markdown .= $renderParts($this->parts['@']);
-            $markdown .= "\n";
-        }
+        $markdown = "## Customization\n\n";
+        $markdown .= "### Available methods\n\n";
 
         uksort($this->parts['methods'], static function ($a, $b) {
             if ('@' === $a) {
@@ -202,13 +155,23 @@ class BuilderParser
             return strcmp($a, $b);
         });
 
-        foreach ($this->parts['methods'] as $package => $methods) {
+        foreach ($this->parts['methods'] as $methods) {
             ksort($methods);
 
             foreach ($methods as $methodName => $parts) {
+                $link = $this->methodsLink[$methodName];
+                $markdown .= "- [{$methodName}](#{$link})\n";
+            }
+        }
+
+        foreach ($this->parts['methods'] as $methods) {
+            ksort($methods);
+
+            $markdown .= "\n";
+            foreach ($methods as $methodName => $parts) {
                 $markdown .= "### {$this->methodsSignature[$methodName]}";
 
-                $renderedParts = $renderParts($parts);
+                $renderedParts = $this->renderParts($parts);
                 if ('' !== $renderedParts) {
                     $markdown .= "\n{$renderedParts}";
                 }
@@ -221,30 +184,99 @@ class BuilderParser
     }
 
     /**
-     * @param ReflectionClass<BuilderInterface> $class
+     * @param ParsedDocBlock $parts
      */
-    private function prepareBuilder(ReflectionClass $class): void
+    private function renderParts(array $parts): string
     {
-        $this->parts = [
-            'methods' => [],
-        ];
+        $markdown = '';
 
-        $classDocComment = $class->getDocComment() ?: '';
-        if ('' !== $classDocComment) {
-            $this->parts['@'] = $this->parsePhpDoc($classDocComment);
+        $description = $this->renderDescription($parts['description']);
+        if ('' !== $description) {
+            $markdown .= $description."\n";
         }
 
-        $this->prepareBuilderFromClass($class);
-        $this->cleanBuilderFromClass($class);
+        $see = $this->renderSee($parts['tags']['see'] ?? []);
+        if ('' !== $see) {
+            if ('' !== $markdown) {
+                $markdown .= "\n";
+            }
 
-        foreach ($this->parts['methods']['@'] as $methodName => $parts) {
-            $package = $parts['package'] ?? '@';
+            $markdown .= $see."\n";
+        }
 
-            if ('@' !== $package) {
-                $this->parts['methods'][$package][$methodName] = $parts;
-                unset($this->parts['methods']['@'][$methodName]);
+        $example = $this->renderExample($parts['tags']['example'] ?? []);
+        if ('' !== $example) {
+            if ('' !== $markdown) {
+                $markdown .= "\n";
+            }
+
+            $markdown .= $example."\n";
+        }
+
+        return $markdown;
+    }
+
+    private function renderDescription(array $parts): string
+    {
+        return trim(implode('<br />', $parts), "\ \n\r\t\v\0");
+    }
+
+    /**
+     * @param list<string> $seeList
+     */
+    private function renderSee(array $seeList): string
+    {
+        if ([] === $seeList) {
+            return '';
+        }
+
+        $lastKey = array_key_last($seeList);
+
+        $markdown = '> [!TIP]';
+        foreach ($seeList as $key => $see) {
+            $markdown .= "\n> See: [{$see}]({$see})";
+
+            $isLast = $lastKey === $key;
+
+            if (false === $isLast) {
+                $markdown .= '<br />';
             }
         }
+
+        return rtrim($markdown, '<br />');
+    }
+
+    /**
+     * @param list<string> $exampleList
+     */
+    private function renderExample(array $exampleList): string
+    {
+        if ([] === $exampleList) {
+            return '';
+        }
+
+        $markdown = '';
+        $lastKey = array_key_last($exampleList);
+        foreach ($exampleList as $key => $example) {
+            $markdown = <<<MARKDOWN
+                ```php
+                return \$gotenberg
+                    // Your builder call as ->html() and the rest of your configuration code
+                    ->$example
+                    ->generate()
+                    ->stream()
+                ;
+                ```
+                MARKDOWN;
+
+            $isLast = $lastKey === $key;
+
+            if (false === $isLast) {
+                $markdown .= '<br />';
+            }
+        }
+
+        return rtrim($markdown, '<br />');
     }
 
     /**
@@ -275,6 +307,7 @@ class BuilderParser
             }
 
             $this->methodsSignature[$method->getName()] = $this->parseMethodSignature($method);
+            $this->methodsLink[$method->getName()] = $this->parseMethodLink($method);
 
             $methodDocComment = $method->getDocComment() ?: '';
             $this->parts['methods']['@'][$method->getShortName()] ??= [];
@@ -319,6 +352,7 @@ class BuilderParser
     {
         foreach ($class->getMethods(ReflectionMethod::IS_PROTECTED | ReflectionMethod::IS_PRIVATE) as $method) {
             unset($this->methodsSignature[$method->getName()]);
+            unset($this->methodsLink[$method->getName()]);
             unset($this->parts['methods']['@'][$method->getShortName()]);
         }
     }
@@ -406,10 +440,32 @@ class BuilderParser
                 $prefixParameter = '...';
             }
 
-            $parameters[] = "{$parameterType} {$prefixParameter}\${$parameterName}";
+            $parameters[] = "{$parameterType} {$prefixParameter}\\\${$parameterName}";
         }
 
         return $methodName.'('.implode(', ', $parameters).')';
+    }
+
+    public function parseMethodLink(ReflectionMethod $method): string
+    {
+        $methodName = $method->getName();
+
+        $parameters = [];
+
+        foreach ($method->getParameters() as $parameter) {
+            $parameterName = $parameter->getName();
+            $parameterType = $parameter->getType();
+
+            $parameters[] = "{$parameterType}-{$parameterName}";
+        }
+
+        $output = preg_replace(
+            ['/\\|/', '/\\\\/', '/, /', '/\?/'],
+            ['', '', '-', ''],
+            $methodName.implode(', ', $parameters),
+        );
+
+        return mb_strtolower($output);
     }
 }
 
@@ -434,10 +490,18 @@ $application->register('generate')
                     throw new RuntimeException(\sprintf('Directory "%s" was not created', $directory));
                 }
 
-                file_put_contents(__DIR__.'/'.$filename, $builderParser->extract());
+                $beforeGeneratedContent = strstr(file_get_contents(__DIR__.'/'.$filename), '<!-- AUTO-GENERATED:START -->', true);
+
+                if (false !== $beforeGeneratedContent) {
+                    file_put_contents(
+                        __DIR__.'/'.$filename,
+                        $beforeGeneratedContent."<!-- AUTO-GENERATED:START -->\n".$builderParser->extract(),
+                    );
+                } else {
+                    file_put_contents(__DIR__.'/'.$filename, $builderParser->extract());
+                }
             }
         }
-        file_put_contents(__DIR__.'/builders_api.md', $summary->extract());
 
         return Command::SUCCESS;
     })
