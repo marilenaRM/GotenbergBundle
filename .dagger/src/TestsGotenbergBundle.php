@@ -106,6 +106,16 @@ final class TestsGotenbergBundle
     }
 
     #[DaggerFunction]
+    #[Doc('Validate all URL docs.')]
+    public function validateUrlDoc(): string
+    {
+        return $this->symfonyContainer
+            ->withExec(['php', './docs/ValidateUrlDoc.php'])
+            ->stdout()
+        ;
+    }
+
+    #[DaggerFunction]
     #[Doc('Run all tests.')]
     #[ReturnsListOfType('string')]
     public function all(): array
