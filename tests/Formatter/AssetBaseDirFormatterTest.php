@@ -9,23 +9,36 @@ use Sensiolabs\GotenbergBundle\Formatter\AssetBaseDirFormatter;
 
 final class AssetBaseDirFormatterTest extends TestCase
 {
+    private const PROJECT_DIR = __DIR__.'/../';
+
     /**
-     * @return iterable<string, array<int, string>>
+     * @return iterable<string, array<int, list<string>|string>>
      */
     public static function generateBaseDirectoryAndPath(): iterable
     {
-        yield 'absolute path and absolute base dir' => ['/mock/foo/file.md', '/mock/bar', '/mock/foo/file.md'];
-        yield 'absolute path and relative base dir' => ['/mock/foo/logo.png', '/bar', '/mock/foo/logo.png'];
-        yield 'relative path and relative base dir' => ['document.odt', 'bar/baz', '/mock/bar/baz/document.odt'];
-        yield 'relative path and absolute base dir' => ['foo/document.odt', '/mock/bar/baz', '/mock/bar/baz/foo/document.odt'];
-        yield 'relative path and relative base dir with end slash' => ['document.odt', 'bar/baz/', '/mock/bar/baz/document.odt'];
+        $projectDir = \dirname(self::PROJECT_DIR, 2);
+
+        yield 'absolute path and absolute base dir' => [$projectDir.'/Fixtures/assets/file.md', [$projectDir.'/Fixtures/assets'], $projectDir.'/Fixtures/assets/file.md'];
+        yield 'absolute path and relative base dir' => [$projectDir.'/Fixtures/assets/file.md', ['assets'], $projectDir.'/Fixtures/assets/file.md'];
+        yield 'relative path and relative base dir' => ['file.md', ['Fixtures/assets'], $projectDir.'/Fixtures/assets/file.md'];
+        yield 'relative path and absolute base dir' => ['office/document.odt', [$projectDir.'/Fixtures/assets'], $projectDir.'/Fixtures/assets/office/document.odt'];
+        yield 'relative path and relative base dir with end slash' => ['document.odt', ['Fixtures/assets/office/'], $projectDir.'/Fixtures/assets/office/document.odt'];
+        yield 'URL path and absolute base dir' => ['https://sensiolabs.com/assets/images/sensiolabs/sensiolabs.fr-OAnPSf0.png', [$projectDir.'/Fixtures/assets'], 'https://sensiolabs.com/assets/images/sensiolabs/sensiolabs.fr-OAnPSf0.png'];
+        yield 'URL path and relative base dir' => ['https://sensiolabs.com/assets/images/sensiolabs/sensiolabs.fr-OAnPSf0.png', ['assets'], 'https://sensiolabs.com/assets/images/sensiolabs/sensiolabs.fr-OAnPSf0.png'];
+        yield 'absolute path and two absolute base dir' => [$projectDir.'/Fixtures/assets/office/document.odt', [$projectDir.'/Fixtures/assets', $projectDir.'/Fixtures/assets/office'], $projectDir.'/Fixtures/assets/office/document.odt'];
+        yield 'absolute path and two relative base dir' => [$projectDir.'/Fixtures/assets/office/document.odt', ['Fixtures/assets', 'Fixtures/assets/office'], $projectDir.'/Fixtures/assets/office/document.odt'];
+        yield 'relative path and two absolute base dir' => ['document.odt', [$projectDir.'/Fixtures/assets', $projectDir.'/Fixtures/assets/office'], $projectDir.'/Fixtures/assets/office/document.odt'];
+        yield 'relative path and two relative base dir' => ['document.odt', ['Fixtures/assets', 'Fixtures/assets/office'], $projectDir.'/Fixtures/assets/office/document.odt'];
     }
 
+    /**
+     * @param string[] $baseDirectories
+     */
     #[DataProvider('generateBaseDirectoryAndPath')]
     #[TestDox('Resolve path when "$_dataName"')]
-    public function testResolvePathCorrectly(string $path, string $baseDirectory, string $expectedResult): void
+    public function testResolvePathCorrectly(string $path, array $baseDirectories, string $expectedResult): void
     {
-        $assetBaseDirFormatter = new AssetBaseDirFormatter('/mock', $baseDirectory);
+        $assetBaseDirFormatter = new AssetBaseDirFormatter(self::PROJECT_DIR, $baseDirectories);
         $resolvedPath = $assetBaseDirFormatter->resolve($path);
         self::assertSame($expectedResult, $resolvedPath);
     }

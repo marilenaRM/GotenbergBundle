@@ -121,7 +121,7 @@ final class MarkdownPdfBuilderTest extends GotenbergBuilderTestCase
         $this->expectExceptionMessage('The file extension "png" is not valid in this context.');
 
         $this->getBuilder()
-            ->files('b.png')
+            ->files(self::FIXTURE_DIR.'/assets/logo.png')
             ->generate()
         ;
     }

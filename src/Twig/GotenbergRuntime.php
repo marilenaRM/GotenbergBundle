@@ -3,6 +3,7 @@
 namespace Sensiolabs\GotenbergBundle\Twig;
 
 use Sensiolabs\GotenbergBundle\Builder\BuilderAssetInterface;
+use Symfony\Component\Asset\Packages;
 
 /**
  * @internal
@@ -13,6 +14,10 @@ use Sensiolabs\GotenbergBundle\Builder\BuilderAssetInterface;
 final class GotenbergRuntime
 {
     private BuilderAssetInterface|null $builder = null;
+
+    public function __construct(private readonly Packages|null $packages = null)
+    {
+    }
 
     public function setBuilder(BuilderAssetInterface|null $builder): void
     {
@@ -27,6 +32,7 @@ final class GotenbergRuntime
      */
     public function getAssetUrl(string $path): string
     {
+        $path = $this->getVersionedPathIfExist($path);
         $this->addAsset($path, 'gotenberg_asset');
 
         return basename($path);
@@ -34,6 +40,7 @@ final class GotenbergRuntime
 
     public function getFontStyleTag(string $path, string $name): string
     {
+        $path = $this->getVersionedPathIfExist($path);
         $this->addAsset($path, 'gotenberg_font_style_tag');
 
         return '<style>'.$this->generateFontFace($path, $name).'</style>';
@@ -41,6 +48,7 @@ final class GotenbergRuntime
 
     public function getFontFace(string $path, string $name): string
     {
+        $path = $this->getVersionedPathIfExist($path);
         $this->addAsset($path, 'gotenberg_font_face');
 
         return $this->generateFontFace($path, $name);
@@ -61,5 +69,15 @@ final class GotenbergRuntime
         }
 
         $this->builder->addAsset($path);
+    }
+
+    private function getVersionedPathIfExist(string $path): string
+    {
+        $packages = $this->packages;
+        if (null !== $packages) {
+            $path = ltrim($packages->getUrl($path), '/');
+        }
+
+        return $path;
     }
 }

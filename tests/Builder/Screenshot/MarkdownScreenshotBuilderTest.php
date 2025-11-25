@@ -41,7 +41,7 @@ final class MarkdownScreenshotBuilderTest extends GotenbergBuilderTestCase
 
     public function testOutputFilename(): void
     {
-        $this->container->set('asset_base_dir_formatter', new AssetBaseDirFormatter(self::FIXTURE_DIR, self::FIXTURE_DIR));
+        $this->container->set('asset_base_dir_formatter', new AssetBaseDirFormatter(self::FIXTURE_DIR, [self::FIXTURE_DIR]));
 
         $this->getBuilder()
             ->wrapperFile('files/content.html')
@@ -137,7 +137,7 @@ final class MarkdownScreenshotBuilderTest extends GotenbergBuilderTestCase
         $this->expectExceptionMessage('The file extension "png" is not valid in this context.');
 
         $this->getBuilder()
-            ->files('b.png')
+            ->files(self::FIXTURE_DIR.'/assets/logo.png')
             ->generate()
         ;
     }
