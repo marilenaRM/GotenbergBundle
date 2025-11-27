@@ -8,10 +8,13 @@ use Dagger\Attribute\DaggerFunction;
 use Dagger\Attribute\DaggerObject;
 use Dagger\Attribute\DefaultPath;
 use Dagger\Attribute\Doc;
+use Dagger\Attribute\Ignore;
 use Dagger\Attribute\ReturnsListOfType;
+use Dagger\Changeset;
 use Dagger\Container;
 use Dagger\Directory;
 use Dagger\Service;
+use DaggerModule\Test\PhpCsFixer;
 use function Amp\async;
 use function Amp\Future\await;
 use function Dagger\dag;
@@ -49,10 +52,13 @@ class GotenbergBundle
         $aptCache = dag()->cacheVolume("apt-cache-{$phpVersion}");
         $composerBin = dag()->container()->from('composer/composer:latest-bin')->file('/composer');
 
-        return dag()
+        $composerCache = dag()->cacheVolume('composer-cache');
+
+        $phpContainer = dag()
             ->container()
             ->from("php:{$phpVersion}")
             ->withMountedCache('/var/cache/apt/archives', $aptCache)
+            ->withMountedCache('/root/.composer/cache/files', $composerCache)
             ->withExec(['apt', 'update'])
             ->withExec(['apt', 'install', '--yes',
                 'git',
@@ -62,6 +68,16 @@ class GotenbergBundle
             ->withEnvVariable('COMPOSER_ALLOW_SUPERUSER', '1')
             ->withWorkdir('/GotenbergBundle')
             ->withMountedDirectory('/GotenbergBundle', $source)
+        ;
+
+        $globalDataDir = trim($phpContainer->withExec(['composer', 'global', 'config', 'data-dir'])->stdout());
+        $globalBinDir = trim($phpContainer->withExec(['composer', 'global', 'config', 'bin-dir'])->stdout());
+
+        return $phpContainer
+            ->withEnvVariable(
+                'PATH',
+                "{$phpContainer->envVariable('PATH')}:{$globalDataDir}/{$globalBinDir}",
+            )
         ;
     }
 
@@ -79,10 +95,7 @@ class GotenbergBundle
             $minimumStability = 'stable';
         }
 
-        $composerCache = dag()->cacheVolume("php-{$phpVersion}-symfony-{$symfonyVersion}-composer-cache");
-
         return $phpContainer
-            ->withMountedCache('/root/.composer/cache/files', $composerCache)
             ->withExec(['composer', 'global', 'config', '--no-plugins', 'allow-plugins.symfony/flex', 'true'])
             ->withExec(['composer', 'global', 'require', 'symfony/flex'])
             ->withExec(['composer', 'config', 'extra.symfony.require', $symfonyVersion])
@@ -105,24 +118,59 @@ class GotenbergBundle
     }
 
     #[DaggerFunction]
-    #[Doc('Generates documentation and returns the Directory to export locally.')]
+    #[Doc('Generates documentation and returns the ChangeSet to apply locally.')]
     public function generateDocs(
         #[DefaultPath('.')]
+        #[Ignore(
+            './.github/',
+            './.phpunit.cache/',
+            './.coverage/',
+            './var/',
+            './vendor/',
+        )]
         Directory $source,
         Container|null $symfonyContainer = null,
-    ): Directory {
+    ): Changeset {
         $symfonyContainer ??= $this->symfonyContainer($source);
 
-        return $symfonyContainer
+        $generatedDocs = dag()->directory()->withDirectory('./docs', $symfonyContainer
             ->withExec(['./docs/generate.php'])
-            ->directory('./docs')
-        ;
+            ->directory('./docs'),
+        );
+
+        return $generatedDocs->changes(dag()->directory()->withDirectory('./docs', $source->directory('./docs')));
+    }
+
+    #[DaggerFunction]
+    #[Doc('Run php-cs-fixer. Returns the Directory diff.')]
+    public function phpCsFixer(
+        #[DefaultPath('.')]
+        #[Ignore(
+            './.github/',
+            './.phpunit.cache/',
+            './.coverage/',
+            './var/',
+            './vendor/',
+        )]
+        Directory $source,
+        Container|null $symfonyContainer = null,
+    ): PhpCsFixer {
+        $symfonyContainer ??= $this->symfonyContainer($source, phpVersion: self::DEFAULT_PHP_VERSION);
+
+        return new PhpCsFixer($source, $symfonyContainer);
     }
 
     #[DaggerFunction]
     #[Doc('Provide a container with all dependencies installed and ready to run tests.')]
     public function test(
         #[DefaultPath('.')]
+        #[Ignore(
+            './.github/',
+            './.phpunit.cache/',
+            './.coverage/',
+            './var/',
+            './vendor/',
+        )]
         Directory $source,
         string $phpVersion = self::DEFAULT_PHP_VERSION,
         string $symfonyVersion = self::DEFAULT_SYMFONY_VERSION,
@@ -136,15 +184,22 @@ class GotenbergBundle
 
     #[DaggerFunction]
     #[Doc('Execute all tests within matrix (PHP version, Symfony version).')]
-    #[ReturnsListOfType('string')]
+    #[ReturnsListOfType(TestsGotenbergBundle::class)]
     public function testsMatrix(
         #[DefaultPath('.')]
+        #[Ignore(
+            './.github/',
+            './.phpunit.cache/',
+            './.coverage/',
+            './var/',
+            './vendor/',
+        )]
         Directory $source,
     ): array {
         $tests = [];
 
         foreach ($this->getMatrix() as [$symfonyVersion, $phpVersion, $minimumStability]) {
-            $tests[] = async(fn () => $this->test($source, $phpVersion, $symfonyVersion, $minimumStability)->all());
+            $tests[] = async(fn () => $this->test($source, $phpVersion, $symfonyVersion, $minimumStability));
         }
 
         $result = [];
@@ -153,6 +208,6 @@ class GotenbergBundle
             $result[] = $test;
         }
 
-        return array_merge(...$result);
+        return $result;
     }
 }
