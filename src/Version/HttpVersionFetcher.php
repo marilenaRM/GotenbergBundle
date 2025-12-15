@@ -17,6 +17,12 @@ final class HttpVersionFetcher implements VersionFetcherInterface
 
     public function get(): Version
     {
-        return $this->version ??= Version::parse($this->client->request('GET', '/version')->getContent());
+        $this->version ??= Version::parse($this->client->request('GET', '/version')->getContent());
+
+        if (version_compare((string) $this->version, '8', '<')) {
+            throw new \InvalidArgumentException('Invalid version %s, supported versions are >= 8.0.0');
+        }
+
+        return $this->version;
     }
 }
