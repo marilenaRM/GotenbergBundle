@@ -151,9 +151,27 @@ class NormalizerFactory
      */
     public static function asset(): \Closure
     {
-        return static function (string $key, array $assets) {
+        /** @var \Closure(string, array<string, \SplFileInfo>): list<array{files: DataPart}> */
+        return self::files('files');
+    }
+
+    /**
+     * @return (\Closure(string, array<string, \SplFileInfo>): list<array{embeds: DataPart}>)
+     */
+    public static function embed(): \Closure
+    {
+        /** @var \Closure(string, array<string, \SplFileInfo>): list<array{embeds: DataPart}> */
+        return self::files('embeds');
+    }
+
+    /**
+     * @return (\Closure(string, array<string, \SplFileInfo>): list<array<string, DataPart>>)
+     */
+    private static function files(string $type): \Closure
+    {
+        return static function (string $key, array $assets) use ($type) {
             foreach ($assets as $asset) {
-                yield ['files' => new DataPart(new File($asset))];
+                yield [$type => new DataPart(new File($asset))];
             }
         };
     }

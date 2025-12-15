@@ -9,6 +9,7 @@ use Sensiolabs\GotenbergBundle\Exception\PartRenderingException;
 use Sensiolabs\GotenbergBundle\Formatter\AssetBaseDirFormatter;
 use Sensiolabs\GotenbergBundle\Test\Builder\GotenbergBuilderTestCase;
 use Sensiolabs\GotenbergBundle\Tests\Builder\Behaviors\ChromiumPdfTestCaseTrait;
+use Sensiolabs\GotenbergBundle\Tests\Builder\Behaviors\EmbedTestCaseTrait;
 use Sensiolabs\GotenbergBundle\Twig\GotenbergRuntime;
 use Symfony\Component\DependencyInjection\Container;
 use Twig\Environment;
@@ -22,6 +23,9 @@ final class HtmlPdfBuilderTest extends GotenbergBuilderTestCase
 {
     /** @use ChromiumPdfTestCaseTrait<HtmlPdfBuilder> */
     use ChromiumPdfTestCaseTrait;
+
+    /** @use EmbedTestCaseTrait<HtmlPdfBuilder> */
+    use EmbedTestCaseTrait;
 
     protected function createBuilder(): HtmlPdfBuilder
     {

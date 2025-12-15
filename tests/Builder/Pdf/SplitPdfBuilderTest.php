@@ -9,6 +9,7 @@ use Sensiolabs\GotenbergBundle\Exception\InvalidBuilderConfiguration;
 use Sensiolabs\GotenbergBundle\Exception\MissingRequiredFieldException;
 use Sensiolabs\GotenbergBundle\Test\Builder\GotenbergBuilderTestCase;
 use Sensiolabs\GotenbergBundle\Tests\Builder\Behaviors\DownloadFromTestCaseTrait;
+use Sensiolabs\GotenbergBundle\Tests\Builder\Behaviors\EmbedTestCaseTrait;
 use Sensiolabs\GotenbergBundle\Tests\Builder\Behaviors\FlattenTestCaseTrait;
 use Sensiolabs\GotenbergBundle\Tests\Builder\Behaviors\MetadataTestCaseTrait;
 use Sensiolabs\GotenbergBundle\Tests\Builder\Behaviors\PdfFormatTestCaseTrait;
@@ -23,6 +24,9 @@ final class SplitPdfBuilderTest extends GotenbergBuilderTestCase
 {
     /** @use DownloadFromTestCaseTrait<SplitPdfBuilder> */
     use DownloadFromTestCaseTrait;
+
+    /** @use EmbedTestCaseTrait<SplitPdfBuilder> */
+    use EmbedTestCaseTrait;
 
     /** @use FlattenTestCaseTrait<SplitPdfBuilder> */
     use FlattenTestCaseTrait;
@@ -122,28 +126,6 @@ final class SplitPdfBuilderTest extends GotenbergBuilderTestCase
         $this->getBuilder()
             ->files('pdf/simple_pdf.pdf')
             ->splitMode(SplitMode::Pages)
-            ->generate()
-        ;
-    }
-
-    public function testRequiredFileContent(): void
-    {
-        $this->expectException(MissingRequiredFieldException::class);
-        $this->expectExceptionMessage('At least one PDF file is required.');
-
-        $this->getBuilder()
-            ->splitMode(SplitMode::Pages)
-            ->splitSpan('1-2')
-            ->generate()
-        ;
-    }
-
-    public function testRequirementMissingFile(): void
-    {
-        $this->expectException(MissingRequiredFieldException::class);
-        $this->expectExceptionMessage('At least one PDF file is required.');
-
-        $this->getBuilder()
             ->generate()
         ;
     }
