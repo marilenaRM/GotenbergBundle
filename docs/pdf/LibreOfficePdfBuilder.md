@@ -111,6 +111,8 @@ class YourController
 - [webhookExtraHeaders](#webhookextraheadersarray-extrahttpheaders)
 - [webhookRoute](#webhookroutestring-route-array-parameters-string-method)
 - [webhookUrl](#webhookurlstring-url-string-method)
+- [ownerPassword](#ownerpasswordstring-ownerpassword)
+- [userPassword](#userpasswordstring-userpassword)
 
 ### addMetadata(string \$key, string \$value)
 If you want to add metadata from the ones already loaded in the configuration.<br />
@@ -668,6 +670,31 @@ Sets the webhook for cases of success.<br />Optionally sets a custom HTTP method
 return $gotenberg
     // Your builder call as ->html() and the rest of your configuration code
     ->webhookUrl('https://my.webhook.url', 'PUT')
+    ->generate()
+    ->stream()
+;
+```
+
+
+### ownerPassword(?string \$ownerPassword)
+Set PDF owner password.<br />
+
+```php
+return $gotenberg
+    // Your builder call as ->html() and the rest of your configuration code
+    ->ownerPassword('OwnerDefinedPassword')
+    ->generate()
+    ->stream()
+;
+```
+
+### userPassword(?string \$userPassword)
+Set PDF user password.<br />
+
+```php
+return $gotenberg
+    // Your builder call as ->html() and the rest of your configuration code
+    ->userPassword('UserDefinedPassword')
     ->generate()
     ->stream()
 ;

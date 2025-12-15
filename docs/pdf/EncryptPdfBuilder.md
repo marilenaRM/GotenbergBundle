@@ -1,9 +1,6 @@
-# MergePdfBuilder
-
-You may have the possibility to merge several PDF document.
-
+## EncryptPdfBuilder
 > [!TIP]
-> See: [https://gotenberg.dev/docs/routes#merge-pdfs-route](https://gotenberg.dev/docs/routes#merge-pdfs-route)
+> See: [https://gotenberg.dev/docs/routes#encrypt-route](https://gotenberg.dev/docs/routes#encrypt-route)
 
 ## Basic usage
 
@@ -11,7 +8,8 @@ You may have the possibility to merge several PDF document.
 > As assets files, by default the PDF files are fetch in the assets folder of
 > your application.
 > For more information about path resolution go to [assets documentation](../assets.md).
-
+> [!WARNING]
+> You must provide at least the User Password
 ```php
 namespace App\Controller;
 
@@ -21,13 +19,11 @@ class YourController
 {
     public function yourControllerMethod(GotenbergPdfInterface $gotenberg): Response
     {
-        return $gotenberg->merge()
-            ->files(
-                'document.pdf',
-                'document_2.pdf',
-            )
+        return $gotenberg->encrypt()
+            ->files('document_1.pdf')
+            ->userPassword('MyUserPassword')
+            ->ownerPassword('MyOwnerPassword')
             ->generate()
-            ->stream()
          ;
     }
 }
@@ -38,14 +34,8 @@ class YourController
 
 ### Available methods
 
-- [addMetadata](#addmetadatastring-key-string-value)
 - [downloadFrom](#downloadfromarray-downloadfrom)
-- [embeds](#embedsstringablestring-paths)
 - [files](#filesstringablestring-paths)
-- [flatten](#flattenbool-bool)
-- [metadata](#metadataarray-metadata)
-- [pdfFormat](#pdfformatsensiolabsgotenbergbundleenumerationpdfformat-format)
-- [pdfUniversalAccess](#pdfuniversalaccessbool-bool)
 - [webhook](#webhookarray-webhook)
 - [webhookConfiguration](#webhookconfigurationstring-name)
 - [webhookErrorRoute](#webhookerrorroutestring-route-array-parameters-string-method)
@@ -55,18 +45,6 @@ class YourController
 - [webhookUrl](#webhookurlstring-url-string-method)
 - [ownerPassword](#ownerpasswordstring-ownerpassword)
 - [userPassword](#userpasswordstring-userpassword)
-
-### addMetadata(string \$key, string \$value)
-If you want to add metadata from the ones already loaded in the configuration.<br />
-
-```php
-return $gotenberg
-    // Your builder call as ->html() and the rest of your configuration code
-    ->addMetadata('key', 'value')
-    ->generate()
-    ->stream()
-;
-```
 
 ### downloadFrom(array \$downloadFrom)
 Sets download from to download each entry (file) in parallel (URLs MUST return a Content-Disposition header with a filename parameter.).<br />
@@ -83,100 +61,7 @@ return $gotenberg
 ;
 ```
 
-### embeds(Stringable|string ...\$paths)
-Add file to embed.<br /><br />As assets files, by default the files to embed are fetch in the assets folder<br />of your application. For more information about path resolution go to<br />assets documentation.<br />
-
-> [!TIP]
-> See: [https://gotenberg.dev/docs/routes#embed-files-route](https://gotenberg.dev/docs/routes#embed-files-route)
-
-```php
-return $gotenberg
-    // Your builder call as ->html() and the rest of your configuration code
-    ->embeds('document.xml','document_2.json')
-    ->generate()
-    ->stream()
-;
-```
-
 ### files(Stringable|string ...\$paths)
-Add PDF files to merge.<br /><br />As assets files, by default the PDF files are fetch in the assets folder<br />of your application. For more information about path resolution go to<br />assets documentation.<br />
-
-> [!TIP]
-> See: [https://gotenberg.dev/docs/routes#merge-pdfs-route ](https://gotenberg.dev/docs/routes#merge-pdfs-route )
-
-```php
-return $gotenberg
-    // Your builder call as ->html() and the rest of your configuration code
-    ->files('document.pdf','document_2.pdf')
-    ->generate()
-    ->stream()
-;
-```
-
-### flatten(bool \$bool)
-Flattening a PDF combines all its contents into a single layer. (default false).<br />
-
-> [!TIP]
-> See: [https://gotenberg.dev/docs/routes#flatten-libreoffice](https://gotenberg.dev/docs/routes#flatten-libreoffice)
-
-```php
-return $gotenberg
-    // Your builder call as ->html() and the rest of your configuration code
-    ->flatten() // is same as `->flatten(true)`
-    ->generate()
-    ->stream()
-;
-```
-
-### metadata(array \$metadata)
-Resets the metadata.<br />
-
-> [!TIP]
-> See: [https://gotenberg.dev/docs/routes#metadata-chromium](https://gotenberg.dev/docs/routes#metadata-chromium)<br />
-> See: [https://gotenberg.dev/docs/routes#metadata-libreoffice](https://gotenberg.dev/docs/routes#metadata-libreoffice)<br />
-> See: [https://gotenberg.dev/docs/routes#write-pdf-metadata-route](https://gotenberg.dev/docs/routes#write-pdf-metadata-route)<br />
-> See: [https://gotenberg.dev/docs/routes#merge-pdfs-route](https://gotenberg.dev/docs/routes#merge-pdfs-route)<br />
-> See: [https://exiftool.org/TagNames/XMP.html#pdf](https://exiftool.org/TagNames/XMP.html#pdf)
-
-```php
-return $gotenberg
-    // Your builder call as ->html() and the rest of your configuration code
-    ->metadata(['Author' => 'SensioLabs', 'Subject' => 'Gotenberg'])
-    ->generate()
-    ->stream()
-;
-```
-
-### pdfFormat(?Sensiolabs\GotenbergBundle\Enumeration\PdfFormat \$format)
-Convert the resulting PDF into the given PDF/A format.<br />
-
-> [!TIP]
-> See: [https://gotenberg.dev/docs/routes#pdfa-chromium](https://gotenberg.dev/docs/routes#pdfa-chromium)
-
-```php
-return $gotenberg
-    // Your builder call as ->html() and the rest of your configuration code
-    ->pdfFormat(PdfFormat::Pdf1b)
-    ->generate()
-    ->stream()
-;
-```
-
-### pdfUniversalAccess(bool \$bool)
-Enable PDF for Universal Access for optimal accessibility.<br />
-
-> [!TIP]
-> See: [https://gotenberg.dev/docs/routes#pdfa-chromium](https://gotenberg.dev/docs/routes#pdfa-chromium)
-
-```php
-return $gotenberg
-    // Your builder call as ->html() and the rest of your configuration code
-    ->pdfUniversalAccess()  // is same as `->pdfUniversalAccess(true)`
-    ->generate()
-    ->stream()
-;
-```
-
 
 ### webhook(array \$webhook)
 > [!TIP]

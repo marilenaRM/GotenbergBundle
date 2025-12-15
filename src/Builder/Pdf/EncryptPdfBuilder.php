@@ -7,51 +7,33 @@ use Sensiolabs\GotenbergBundle\Builder\Attributes\NormalizeGotenbergPayload;
 use Sensiolabs\GotenbergBundle\Builder\Attributes\WithBuilderConfiguration;
 use Sensiolabs\GotenbergBundle\Builder\Behaviors\Dependencies\AssetBaseDirFormatterAwareTrait;
 use Sensiolabs\GotenbergBundle\Builder\Behaviors\DownloadFromTrait;
-use Sensiolabs\GotenbergBundle\Builder\Behaviors\EmbedTrait;
 use Sensiolabs\GotenbergBundle\Builder\Behaviors\EncryptTrait;
-use Sensiolabs\GotenbergBundle\Builder\Behaviors\FlattenTrait;
-use Sensiolabs\GotenbergBundle\Builder\Behaviors\MetadataTrait;
-use Sensiolabs\GotenbergBundle\Builder\Behaviors\PdfFormatTrait;
 use Sensiolabs\GotenbergBundle\Builder\Behaviors\WebhookTrait;
 use Sensiolabs\GotenbergBundle\Builder\Util\NormalizerFactory;
 use Sensiolabs\GotenbergBundle\Builder\Util\ValidatorFactory;
 use Sensiolabs\GotenbergBundle\Exception\MissingRequiredFieldException;
 
 /**
- * Merge `n` pdf files into a single one.
+ * You may encrypt a PDF after it is created.
  *
- * @see https://gotenberg.dev/docs/routes#merge-pdfs-route
+ * You must provide at least a user password.
+ *
+ * @see https://gotenberg.dev/docs/routes#encrypt-route
  */
-#[WithBuilderConfiguration(type: 'pdf', name: 'merge')]
-final class MergePdfBuilder extends AbstractBuilder
+#[WithBuilderConfiguration(type: 'pdf', name: 'encrypt')]
+final class EncryptPdfBuilder extends AbstractBuilder
 {
     use AssetBaseDirFormatterAwareTrait;
     use DownloadFromTrait;
-    use EmbedTrait;
     use EncryptTrait;
-    use FlattenTrait;
-    use MetadataTrait;
-    use PdfFormatTrait;
     use WebhookTrait;
 
-    public const ENDPOINT = '/forms/pdfengines/merge';
+    public const ENDPOINT = '/forms/pdfengines/encrypt';
 
-    /**
-     * Add PDF files to merge.
-     *
-     * As assets files, by default the PDF files are fetch in the assets folder
-     * of your application. For more information about path resolution go to
-     * assets documentation.
-     *
-     * @see https://gotenberg.dev/docs/routes#merge-pdfs-route
-     *
-     * @example files('document.pdf','document_2.pdf')
-     */
     public function files(string|\Stringable ...$paths): self
     {
         foreach ($paths as $path) {
             $path = (string) $path;
-
             $info = new \SplFileInfo($this->getAssetBaseDirFormatter()->resolve($path));
             ValidatorFactory::filesExtension([$info], ['pdf']);
 
@@ -70,6 +52,12 @@ final class MergePdfBuilder extends AbstractBuilder
 
     protected function validatePayloadBody(): void
     {
+        $this->introducedIn('8.25');
+
+        if ($this->getBodyBag()->get('userPassword') === null) {
+            throw new MissingRequiredFieldException('At least userPassword must be provided.');
+        }
+
         if ($this->getBodyBag()->get('files') === null && $this->getBodyBag()->get('downloadFrom') === null) {
             throw new MissingRequiredFieldException('At least one PDF file is required.');
         }
@@ -79,6 +67,5 @@ final class MergePdfBuilder extends AbstractBuilder
     private function normalizeFiles(): \Generator
     {
         yield 'files' => NormalizerFactory::asset();
-        yield 'embeds' => NormalizerFactory::embed();
     }
 }

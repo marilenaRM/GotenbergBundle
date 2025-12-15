@@ -8,6 +8,7 @@ use Sensiolabs\GotenbergBundle\Builder\Attributes\WithBuilderConfiguration;
 use Sensiolabs\GotenbergBundle\Builder\Behaviors\Dependencies\AssetBaseDirFormatterAwareTrait;
 use Sensiolabs\GotenbergBundle\Builder\Behaviors\DownloadFromTrait;
 use Sensiolabs\GotenbergBundle\Builder\Behaviors\EmbedTrait;
+use Sensiolabs\GotenbergBundle\Builder\Behaviors\EncryptTrait;
 use Sensiolabs\GotenbergBundle\Builder\Behaviors\FlattenTrait;
 use Sensiolabs\GotenbergBundle\Builder\Behaviors\MetadataTrait;
 use Sensiolabs\GotenbergBundle\Builder\Behaviors\PdfFormatTrait;
@@ -28,6 +29,7 @@ final class SplitPdfBuilder extends AbstractBuilder
     use AssetBaseDirFormatterAwareTrait;
     use DownloadFromTrait;
     use EmbedTrait;
+    use EncryptTrait;
     use FlattenTrait;
     use MetadataTrait;
     use PdfFormatTrait;

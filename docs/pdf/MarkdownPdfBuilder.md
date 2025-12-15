@@ -170,6 +170,8 @@ class YourController
 - [footerFile](#footerfilestring-path)
 - [header](#headerstring-template-array-context)
 - [headerFile](#headerfilestring-path)
+- [ownerPassword](#ownerpasswordstring-ownerpassword)
+- [userPassword](#userpasswordstring-userpassword)
 - [failOnConsoleExceptions](#failonconsoleexceptionsbool-bool)
 - [failOnHttpStatusCodes](#failonhttpstatuscodesarray-statuscodes)
 - [failOnResourceHttpStatusCodes](#failonresourcehttpstatuscodesarray-statuscodes)
@@ -837,6 +839,31 @@ HTML file containing the header.<br /><br />As assets files, by default the HTML
 return $gotenberg
     // Your builder call as ->html() and the rest of your configuration code
     ->headerFile('../templates/html/header.html')
+    ->generate()
+    ->stream()
+;
+```
+
+
+### ownerPassword(?string \$ownerPassword)
+Set PDF owner password.<br />
+
+```php
+return $gotenberg
+    // Your builder call as ->html() and the rest of your configuration code
+    ->ownerPassword('OwnerDefinedPassword')
+    ->generate()
+    ->stream()
+;
+```
+
+### userPassword(?string \$userPassword)
+Set PDF user password.<br />
+
+```php
+return $gotenberg
+    // Your builder call as ->html() and the rest of your configuration code
+    ->userPassword('UserDefinedPassword')
     ->generate()
     ->stream()
 ;

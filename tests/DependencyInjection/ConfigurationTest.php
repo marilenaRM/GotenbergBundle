@@ -6,6 +6,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Sensiolabs\GotenbergBundle\Builder\BuilderInterface;
 use Sensiolabs\GotenbergBundle\Builder\Pdf\ConvertPdfBuilder;
+use Sensiolabs\GotenbergBundle\Builder\Pdf\EncryptPdfBuilder;
 use Sensiolabs\GotenbergBundle\Builder\Pdf\HtmlPdfBuilder;
 use Sensiolabs\GotenbergBundle\Builder\Pdf\LibreOfficePdfBuilder;
 use Sensiolabs\GotenbergBundle\Builder\Pdf\MarkdownPdfBuilder;
@@ -51,6 +52,7 @@ final class ConfigurationTest extends TestCase
                     MergePdfBuilder::class,
                     UrlPdfBuilder::class,
                     SplitPdfBuilder::class,
+                    EncryptPdfBuilder::class,
                 ],
                 'screenshot' => [
                     HtmlScreenshotBuilder::class,
@@ -227,6 +229,7 @@ final class ConfigurationTest extends TestCase
      *              'office': array<string, mixed>,
      *              'merge': array<string, mixed>,
      *              'convert': array<string, mixed>,
+     *              'encrypt': array<string, mixed>,
      *          }
      *     }
      * }
@@ -351,6 +354,16 @@ final class ConfigurationTest extends TestCase
                             'extra_http_headers' => [],
                         ],
                         'metadata' => [
+                        ],
+                    ],
+                    'encrypt' => [
+                        'download_from' => [],
+                        'webhook' => [
+                            'success' => [
+                            ],
+                            'error' => [
+                            ],
+                            'extra_http_headers' => [],
                         ],
                     ],
                 ],

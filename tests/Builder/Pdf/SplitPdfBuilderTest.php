@@ -10,6 +10,7 @@ use Sensiolabs\GotenbergBundle\Exception\MissingRequiredFieldException;
 use Sensiolabs\GotenbergBundle\Test\Builder\GotenbergBuilderTestCase;
 use Sensiolabs\GotenbergBundle\Tests\Builder\Behaviors\DownloadFromTestCaseTrait;
 use Sensiolabs\GotenbergBundle\Tests\Builder\Behaviors\EmbedTestCaseTrait;
+use Sensiolabs\GotenbergBundle\Tests\Builder\Behaviors\EncryptTestCaseTrait;
 use Sensiolabs\GotenbergBundle\Tests\Builder\Behaviors\FlattenTestCaseTrait;
 use Sensiolabs\GotenbergBundle\Tests\Builder\Behaviors\MetadataTestCaseTrait;
 use Sensiolabs\GotenbergBundle\Tests\Builder\Behaviors\PdfFormatTestCaseTrait;
@@ -27,6 +28,9 @@ final class SplitPdfBuilderTest extends GotenbergBuilderTestCase
 
     /** @use EmbedTestCaseTrait<SplitPdfBuilder> */
     use EmbedTestCaseTrait;
+
+    /** @use EncryptTestCaseTrait<SplitPdfBuilder> */
+    use EncryptTestCaseTrait;
 
     /** @use FlattenTestCaseTrait<SplitPdfBuilder> */
     use FlattenTestCaseTrait;

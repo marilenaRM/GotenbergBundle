@@ -15,6 +15,9 @@ trait LibreOfficeTestCaseTrait
     /** @use EmbedTestCaseTrait<T> */
     use EmbedTestCaseTrait;
 
+    /** @use EncryptTestCaseTrait<T> */
+    use EncryptTestCaseTrait;
+
     /** @use FlattenTestCaseTrait<T> */
     use FlattenTestCaseTrait;
 
