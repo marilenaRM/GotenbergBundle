@@ -18,6 +18,10 @@ use Sensiolabs\GotenbergBundle\Exception\MissingRequiredFieldException;
  * and ensuring that the document's integrity is maintained.
  *
  * @see https://gotenberg.dev/docs/routes#flatten-pdfs-route
+ *
+ * @methodDoc files If you provide multiple PDF files you will get ZIP folder containing all the converted PDF.
+ *
+ * @example files('document.pdf', __DIR__'/../../public/document_2.pdf')
  */
 #[WithBuilderConfiguration(type: 'pdf', name: 'flatten')]
 final class FlattenPdfBuilder extends AbstractBuilder
