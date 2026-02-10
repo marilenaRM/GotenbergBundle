@@ -6,9 +6,9 @@ use Sensiolabs\GotenbergBundle\Builder\AbstractBuilder;
 use Sensiolabs\GotenbergBundle\Builder\Attributes\NormalizeGotenbergPayload;
 use Sensiolabs\GotenbergBundle\Builder\Attributes\WithBuilderConfiguration;
 use Sensiolabs\GotenbergBundle\Builder\Behaviors\ChromiumScreenshotTrait;
+use Sensiolabs\GotenbergBundle\Builder\Behaviors\FilesTrait;
 use Sensiolabs\GotenbergBundle\Builder\BuilderAssetInterface;
 use Sensiolabs\GotenbergBundle\Builder\Util\NormalizerFactory;
-use Sensiolabs\GotenbergBundle\Builder\Util\ValidatorFactory;
 use Sensiolabs\GotenbergBundle\Enumeration\Part;
 use Sensiolabs\GotenbergBundle\Exception\MissingRequiredFieldException;
 use Sensiolabs\GotenbergBundle\Exception\PartRenderingException;
@@ -19,6 +19,15 @@ use Sensiolabs\GotenbergBundle\Exception\PartRenderingException;
  *
  * @see https://gotenberg.dev/docs/routes#screenshots-route
  * @see https://gotenberg.dev/docs/routes#markdown-files-into-pdf-route
+ *
+ * @methodDoc files Add Markdown into a screenshot.
+ *  Required to generate a screenshot from Markdown builder.
+ *  You can pass several files with that method.
+ *
+ * @see https://gotenberg.dev/docs/routes#screenshots-route
+ * @see https://gotenberg.dev/docs/routes#markdown-files-into-pdf-route
+ *
+ * @example files('header.md','content.md','footer.md')
  */
 #[WithBuilderConfiguration(type: 'screenshot', name: 'markdown')]
 final class MarkdownScreenshotBuilder extends AbstractBuilder implements BuilderAssetInterface
@@ -27,8 +36,13 @@ final class MarkdownScreenshotBuilder extends AbstractBuilder implements Builder
         content as private;
         contentFile as private;
     }
+    use FilesTrait;
 
     public const ENDPOINT = '/forms/chromium/screenshot/markdown';
+
+    private const AVAILABLE_EXTENSIONS = [
+        'md',
+    ];
 
     /**
      * The Twig file to convert into screenshot.
@@ -68,30 +82,9 @@ final class MarkdownScreenshotBuilder extends AbstractBuilder implements Builder
         return $this->contentFile($path);
     }
 
-    /**
-     * Add Markdown into a screenshot.
-     *
-     * Required to generate a screenshot from Markdown builder.
-     * You can pass several files with that method.
-     *
-     * @see https://gotenberg.dev/docs/routes#screenshots-route
-     * @see https://gotenberg.dev/docs/routes#markdown-files-into-pdf-route
-     *
-     * @example files('header.md','content.md','footer.md')
-     */
-    public function files(string|\Stringable ...$paths): self
+    protected function getAllowedFilesExtensions(): array
     {
-        foreach ($paths as $path) {
-            $path = (string) $path;
-            $info = new \SplFileInfo($this->getAssetBaseDirFormatter()->resolve($path));
-            ValidatorFactory::filesExtension([$info], ['md']);
-
-            $files[$path] = $info;
-        }
-
-        $this->getBodyBag()->set('files', $files ?? null);
-
-        return $this;
+        return self::AVAILABLE_EXTENSIONS;
     }
 
     protected function getEndpoint(): string

@@ -179,11 +179,11 @@ return $gotenberg
 ```
 
 ### files(Stringable|string ...\$paths)
-Add Markdown into a screenshot.<br /><br />Required to generate a screenshot from Markdown builder.<br />You can pass several files with that method.<br />
+Add Markdown into a screenshot.<br />Required to generate a screenshot from Markdown builder.<br />You can pass several files with that method.<br />
 
 > [!TIP]
 > See: [https://gotenberg.dev/docs/routes#screenshots-route](https://gotenberg.dev/docs/routes#screenshots-route)<br />
-> See: [https://gotenberg.dev/docs/routes#markdown-files-into-pdf-route ](https://gotenberg.dev/docs/routes#markdown-files-into-pdf-route )
+> See: [https://gotenberg.dev/docs/routes#markdown-files-into-pdf-route](https://gotenberg.dev/docs/routes#markdown-files-into-pdf-route)
 
 ```php
 return $gotenberg

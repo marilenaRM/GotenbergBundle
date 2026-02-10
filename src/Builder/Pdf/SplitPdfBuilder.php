@@ -9,13 +9,13 @@ use Sensiolabs\GotenbergBundle\Builder\Behaviors\Dependencies\AssetBaseDirFormat
 use Sensiolabs\GotenbergBundle\Builder\Behaviors\DownloadFromTrait;
 use Sensiolabs\GotenbergBundle\Builder\Behaviors\EmbedTrait;
 use Sensiolabs\GotenbergBundle\Builder\Behaviors\EncryptTrait;
+use Sensiolabs\GotenbergBundle\Builder\Behaviors\FilesTrait;
 use Sensiolabs\GotenbergBundle\Builder\Behaviors\FlattenTrait;
 use Sensiolabs\GotenbergBundle\Builder\Behaviors\MetadataTrait;
 use Sensiolabs\GotenbergBundle\Builder\Behaviors\PdfFormatTrait;
 use Sensiolabs\GotenbergBundle\Builder\Behaviors\SplitTrait;
 use Sensiolabs\GotenbergBundle\Builder\Behaviors\WebhookTrait;
 use Sensiolabs\GotenbergBundle\Builder\Util\NormalizerFactory;
-use Sensiolabs\GotenbergBundle\Builder\Util\ValidatorFactory;
 use Sensiolabs\GotenbergBundle\Exception\MissingRequiredFieldException;
 
 /**
@@ -39,6 +39,7 @@ final class SplitPdfBuilder extends AbstractBuilder
     use DownloadFromTrait;
     use EmbedTrait;
     use EncryptTrait;
+    use FilesTrait;
     use FlattenTrait;
     use MetadataTrait;
     use PdfFormatTrait;
@@ -46,31 +47,13 @@ final class SplitPdfBuilder extends AbstractBuilder
     use WebhookTrait;
 
     public const ENDPOINT = '/forms/pdfengines/split';
+    private const AVAILABLE_EXTENSIONS = [
+        'pdf',
+    ];
 
-    /**
-     * Add PDF files to split.
-     *
-     * As assets files, by default the PDF files are fetch in the assets folder
-     * of your application. For more information about path resolution go to
-     * assets documentation.
-     *
-     * @see https://gotenberg.dev/docs/routes#split-pdfs-route
-     *
-     * @example files('document.pdf','document_2.pdf')
-     */
-    public function files(string|\Stringable ...$paths): self
+    protected function getAllowedFilesExtensions(): array
     {
-        foreach ($paths as $path) {
-            $path = (string) $path;
-            $info = new \SplFileInfo($this->getAssetBaseDirFormatter()->resolve($path));
-            ValidatorFactory::filesExtension([$info], ['pdf']);
-
-            $files[$path] = $info;
-        }
-
-        $this->getBodyBag()->set('files', $files ?? null);
-
-        return $this;
+        return self::AVAILABLE_EXTENSIONS;
     }
 
     protected function getEndpoint(): string
