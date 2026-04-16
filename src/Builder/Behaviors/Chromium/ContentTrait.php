@@ -39,11 +39,27 @@ trait ContentTrait
     }
 
     /**
+     * The raw html string to convert into PDF.
+     *
+     * Warning: Assets (css, images, etc...) cannot be parsed and loaded dynamically.
+     * Assets can still be loaded using https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#assets.
+     *
+     * @example contentRaw('<html><body><h2>The content</h2></body></html>')
+     */
+    public function contentRaw(string $html): self
+    {
+        return $this->withRawPart(Part::Body, $html);
+    }
+
+    /**
      * The HTML file to convert into PDF.
      *
      * As assets files, by default the HTML files are fetch in the assets folder of your application.
      * If your HTML files are in another folder, you can override the default value of assets_directory in your
      * configuration file config/sensiolabs_gotenberg.yml.
+     *
+     * Warning: Assets (css, images, etc...) cannot be parsed and loaded dynamically.
+     * Assets can still be loaded using https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#assets.
      *
      * @throws PartRenderingException if the template could not be rendered
      *
@@ -74,6 +90,21 @@ trait ContentTrait
     }
 
     /**
+     * The raw html string to convert into PDF.
+     *
+     * Warning: Assets (css, images, etc...) cannot be parsed and loaded dynamically.
+     * Assets can still be loaded using https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#assets.
+     *
+     * @see https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#header--footer
+     *
+     * @example headerRaw('<html><body><h1>The header</h1></body></html>')
+     */
+    public function headerRaw(string $html): static
+    {
+        return $this->withRawPart(Part::Header, $html);
+    }
+
+    /**
      * @param string               $template #Template
      * @param array<string, mixed> $context
      *
@@ -93,11 +124,29 @@ trait ContentTrait
     }
 
     /**
+     * The raw html string to convert into PDF.
+     *
+     * Warning: Assets (css, images, etc...) cannot be parsed and loaded dynamically.
+     * Assets can still be loaded using https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#assets.
+     *
+     * @see https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#header--footer
+     *
+     * @example footerRaw('<html><body><h6>The footer</h6></body></html>')
+     */
+    public function footerRaw(string $html): static
+    {
+        return $this->withRawPart(Part::Footer, $html);
+    }
+
+    /**
      * HTML file containing the header.
      *
      * As assets files, by default the HTML files are fetch in the assets folder of your application.
      * If your HTML files are in another folder, you can override the default value of assets_directory in your
      * configuration file config/sensiolabs_gotenberg.yml.
+     *
+     * Warning: Assets (css, images, etc...) cannot be parsed and loaded dynamically.
+     * Assets can still be loaded using https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#assets.
      *
      * @see https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#header--footer
      *
@@ -116,6 +165,9 @@ trait ContentTrait
      * As assets files, by default the HTML files are fetch in the assets folder of your application.
      * If your HTML files are in another folder, you can override the default value of assets_directory in your
      * configuration file config/sensiolabs_gotenberg.yml.
+     *
+     * Warning: Assets (css, images, etc...) cannot be parsed and loaded dynamically.
+     * Assets can still be loaded using https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#assets.
      *
      * @see https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#header--footer
      *
@@ -146,6 +198,13 @@ trait ContentTrait
         }
 
         $this->getBodyBag()->set($part->value, $renderedPart);
+
+        return $this;
+    }
+
+    protected function withRawPart(Part $part, string $html): static
+    {
+        $this->getBodyBag()->set($part->value, new RenderedPart($part, $html));
 
         return $this;
     }
