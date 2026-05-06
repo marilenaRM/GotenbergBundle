@@ -46,7 +46,10 @@ final class GotenbergRuntime
         $path = $this->getVersionedPathIfExist($path);
         $this->addAsset($path, 'gotenberg_font_style_tag');
 
-        return '<style>'.$this->generateFontFace($path, $name).'</style>';
+        $name = htmlspecialchars($name);
+        $basename = htmlspecialchars(basename($path));
+
+        return '<style>@font-face {font-family: "'.$name.'";src: url("'.$basename.'");}</style>';
     }
 
     public function getFontFace(string $path, string $name): string
@@ -54,11 +57,7 @@ final class GotenbergRuntime
         $path = $this->getVersionedPathIfExist($path);
         $this->addAsset($path, 'gotenberg_font_face');
 
-        return $this->generateFontFace($path, $name);
-    }
-
-    private function generateFontFace(string $path, string $name): string
-    {
+        // htmlspecialchars prevents </style> injection when used in HTML context (is_safe => ['html', 'css'])
         $name = htmlspecialchars($name);
         $basename = htmlspecialchars(basename($path));
 
