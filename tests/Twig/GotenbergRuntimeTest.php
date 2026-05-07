@@ -18,8 +18,11 @@ class GotenbergRuntimeTest extends TestCase
 {
     public function testGetAsset(): void
     {
-        [$runtime, $builder] = $this->createRuntime();
+        $builder = $this->createMock(BuilderAssetInterface::class);
         $builder->expects($this->once())->method('addAsset')->with('foo');
+
+        $runtime = new GotenbergRuntime();
+        $runtime->setBuilder($builder);
 
         $this->assertSame('foo', $runtime->getAssetUrl('foo'));
     }
@@ -34,8 +37,11 @@ class GotenbergRuntimeTest extends TestCase
 
     public function testGetFontFace(): void
     {
-        [$runtime, $builder] = $this->createRuntime();
+        $builder = $this->createMock(BuilderAssetInterface::class);
         $builder->expects($this->once())->method('addAsset')->with('foo.ttf');
+
+        $runtime = new GotenbergRuntime();
+        $runtime->setBuilder($builder);
 
         $this->assertSame(
             '@font-face {font-family: "my_font";src: url("foo.ttf");}',
@@ -45,8 +51,11 @@ class GotenbergRuntimeTest extends TestCase
 
     public function testGetFontStyleTag(): void
     {
-        [$runtime, $builder] = $this->createRuntime();
+        $builder = $this->createMock(BuilderAssetInterface::class);
         $builder->expects($this->once())->method('addAsset')->with('foo.ttf');
+
+        $runtime = new GotenbergRuntime();
+        $runtime->setBuilder($builder);
 
         $this->assertSame(
             '<style>@font-face {font-family: "my_font";src: url("foo.ttf");}</style>',
@@ -171,102 +180,56 @@ class GotenbergRuntimeTest extends TestCase
         $this->assertSame('origin.png', $path);
     }
 
-    public function testFontFaceCssEscapeFilterBreaksCssRule(): void
+    /**
+     * @return iterable<string, array{string, string}>
+     */
+    public static function provideFontRenderingCases(): iterable
     {
-        [$twig] = $this->createTwigEnvironment();
-
-        $output = $twig->createTemplate('<style>{{ gotenberg_font_face("foo.ttf", "my_font") | e("css") }}</style>')->render([]);
-
-        // | e('css') encodes every non-alphanumeric character (e.g. @ → \40, { → \7B)
-        // which destroys the structure of the CSS rule
-        $this->assertStringNotContainsString('@font-face', $output);
-        $this->assertStringContainsString('\40', $output);
-    }
-
-    public function testFontFaceIsNotEscapedInHtmlContext(): void
-    {
-        [$twig] = $this->createTwigEnvironment();
-
-        $output = $twig->createTemplate('<style>{{ gotenberg_font_face("foo.ttf", "my_font") }}</style>')->render([]);
-
-        $this->assertStringContainsString(
-            '@font-face {font-family: "my_font";src: url("foo.ttf");}',
-            $output,
-            'gotenberg_font_face must not HTML-escape quotes when used inside a <style> tag.',
-        );
-    }
-
-    public function testFontStyleTagIsNotEscapedInHtmlContext(): void
-    {
-        [$twig] = $this->createTwigEnvironment();
-
-        $output = $twig->createTemplate('{{ gotenberg_font_style_tag("foo.ttf", "my_font") }}')->render([]);
-
-        $this->assertStringContainsString(
+        yield 'font_face_in_html_context' => [
+            '<style>{{ gotenberg_font_face("foo.ttf", "my_font") }}</style>',
             '<style>@font-face {font-family: "my_font";src: url("foo.ttf");}</style>',
-            $output,
-        );
-    }
-
-    public function testFontFaceEscapesMaliciousPath(): void
-    {
-        [$twig] = $this->createTwigEnvironment();
-
-        $output = $twig->createTemplate('<style>{{ gotenberg_font_face("fonts/<script>alert(1).ttf", "my_font") }}</style>')->render([]);
-
-        $this->assertStringNotContainsString('<script>', $output);
-        $this->assertStringContainsString('&lt;script&gt;', $output);
-    }
-
-    public function testFontFaceEscapesMaliciousName(): void
-    {
-        [$twig] = $this->createTwigEnvironment();
-
-        $output = $twig->createTemplate('<style>{{ gotenberg_font_face("foo.ttf", "</style><script>alert(\'xss\')</script>") }}</style>')->render([]);
-
-        $this->assertStringNotContainsString('<script>', $output);
-        $this->assertStringContainsString('&lt;script&gt;', $output);
-    }
-
-    public function testFontStyleTagEscapesMaliciousPath(): void
-    {
-        [$twig] = $this->createTwigEnvironment();
-
-        $output = $twig->createTemplate('{{ gotenberg_font_style_tag("fonts/<script>alert(1).ttf", "my_font") }}')->render([]);
-
-        $this->assertStringNotContainsString('<script>', $output);
-        $this->assertStringContainsString('&lt;script&gt;', $output);
-    }
-
-    public function testFontStyleTagEscapesMaliciousName(): void
-    {
-        [$twig] = $this->createTwigEnvironment();
-
-        $output = $twig->createTemplate('{{ gotenberg_font_style_tag("foo.ttf", "</style><script>alert(\'xss\')</script>") }}')->render([]);
-
-        $this->assertStringNotContainsString('<script>', $output);
-        $this->assertStringContainsString('&lt;script&gt;', $output);
+        ];
+        yield 'font_style_tag_in_html_context' => [
+            '{{ gotenberg_font_style_tag("foo.ttf", "my_font") }}',
+            '<style>@font-face {font-family: "my_font";src: url("foo.ttf");}</style>',
+        ];
+        // basename() strips directory parts on /, so </style> in a path naturally loses its </ —
+        // but opening tags like <script> survive and must be escaped by htmlspecialchars
+        yield 'font_face_escapes_malicious_path' => [
+            '<style>{{ gotenberg_font_face("fonts/<script>alert(1).ttf", "my_font") }}</style>',
+            '<style>@font-face {font-family: "my_font";src: url("&lt;script&gt;alert(1).ttf");}</style>',
+        ];
+        yield 'font_style_tag_escapes_malicious_path' => [
+            '{{ gotenberg_font_style_tag("fonts/<script>alert(1).ttf", "my_font") }}',
+            '<style>@font-face {font-family: "my_font";src: url("&lt;script&gt;alert(1).ttf");}</style>',
+        ];
+        // names are not processed by basename — the full injection string must be escaped
+        yield 'font_face_escapes_malicious_name' => [
+            '<style>{{ gotenberg_font_face("foo.ttf", "</style><script>alert(\'xss\')</script>") }}</style>',
+            '<style>@font-face {font-family: "&lt;/style&gt;&lt;script&gt;alert(&#039;xss&#039;)&lt;/script&gt;";src: url("foo.ttf");}</style>',
+        ];
+        yield 'font_style_tag_escapes_malicious_name' => [
+            '{{ gotenberg_font_style_tag("foo.ttf", "</style><script>alert(\'xss\')</script>") }}',
+            '<style>@font-face {font-family: "&lt;/style&gt;&lt;script&gt;alert(&#039;xss&#039;)&lt;/script&gt;";src: url("foo.ttf");}</style>',
+        ];
+        // | e('css') encodes every non-alphanumeric character (@ → \40, { → \7B, etc.),
+        // destroying the structure of the CSS rule — it is the wrong tool for a complete CSS rule
+        yield 'font_face_css_escape_filter_breaks_rule' => [
+            '<style>{{ gotenberg_font_face("foo.ttf", "my_font") | e("css") }}</style>',
+            '<style>\40 font\2D face\20 \7B font\2D family\3A \20 \22 my\5F font\22 \3B src\3A \20 url\28 \22 foo\2E ttf\22 \29 \3B \7D </style>',
+        ];
     }
 
     /**
-     * @return array{GotenbergRuntime, MockObject&BuilderAssetInterface}
+     * @dataProvider provideFontRenderingCases
      */
-    private function createRuntime(): array
+    public function testFontRendering(string $template, string $expected): void
     {
         $builder = $this->createMock(BuilderAssetInterface::class);
+        $builder->method('addAsset');
+
         $runtime = new GotenbergRuntime();
         $runtime->setBuilder($builder);
-
-        return [$runtime, $builder];
-    }
-
-    /**
-     * @return array{Environment, MockObject&BuilderAssetInterface}
-     */
-    private function createTwigEnvironment(): array
-    {
-        [$runtime, $builder] = $this->createRuntime();
-        $builder->method('addAsset');
 
         $twig = new Environment(new ArrayLoader(), ['autoescape' => 'html']);
         $twig->addExtension(new GotenbergExtension());
@@ -274,6 +237,6 @@ class GotenbergRuntimeTest extends TestCase
             GotenbergRuntime::class => static fn () => $runtime,
         ]));
 
-        return [$twig, $builder];
+        $this->assertSame($expected, $twig->createTemplate($template)->render([]));
     }
 }
