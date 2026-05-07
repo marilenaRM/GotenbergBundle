@@ -5,7 +5,14 @@ namespace Sensiolabs\GotenbergBundle\Builder\Behaviors;
 trait ChromiumScreenshotTrait
 {
     use Chromium\AssetTrait;
-    use Chromium\ContentTrait;
+    use Chromium\ContentTrait, Chromium\HideHeaderFooterTrait {
+        Chromium\HideHeaderFooterTrait::header insteadof Chromium\ContentTrait;
+        Chromium\HideHeaderFooterTrait::headerRaw insteadof Chromium\ContentTrait;
+        Chromium\HideHeaderFooterTrait::headerFile insteadof Chromium\ContentTrait;
+        Chromium\HideHeaderFooterTrait::footer insteadof Chromium\ContentTrait;
+        Chromium\HideHeaderFooterTrait::footerRaw insteadof Chromium\ContentTrait;
+        Chromium\HideHeaderFooterTrait::footerFile insteadof Chromium\ContentTrait;
+    }
     use Chromium\CookieTrait;
     use Chromium\CustomHttpHeadersTrait;
     use Chromium\EmulatedMediaFeaturesTrait;
