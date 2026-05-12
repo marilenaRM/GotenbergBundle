@@ -185,36 +185,31 @@ class GotenbergRuntimeTest extends TestCase
      */
     public static function provideFontRenderingCases(): iterable
     {
-        yield 'font_face_in_html_context' => [
+        yield 'gotenberg_font_face renders correctly inside a style tag' => [
             '<style>{{ gotenberg_font_face("foo.ttf", "my_font") }}</style>',
             '<style>@font-face {font-family: "my_font";src: url("foo.ttf");}</style>',
         ];
-        yield 'font_style_tag_in_html_context' => [
+        yield 'gotenberg_font_style_tag renders correctly in html context' => [
             '{{ gotenberg_font_style_tag("foo.ttf", "my_font") }}',
             '<style>@font-face {font-family: "my_font";src: url("foo.ttf");}</style>',
         ];
-        // basename() strips directory parts on /, so </style> in a path naturally loses its </ —
-        // but opening tags like <script> survive and must be escaped by htmlspecialchars
-        yield 'font_face_escapes_malicious_path' => [
+        yield 'gotenberg_font_face escapes html tags in path inside a style tag' => [
             '<style>{{ gotenberg_font_face("fonts/<script>alert(1).ttf", "my_font") }}</style>',
             '<style>@font-face {font-family: "my_font";src: url("&lt;script&gt;alert(1).ttf");}</style>',
         ];
-        yield 'font_style_tag_escapes_malicious_path' => [
+        yield 'gotenberg_font_style_tag escapes html tags in path' => [
             '{{ gotenberg_font_style_tag("fonts/<script>alert(1).ttf", "my_font") }}',
             '<style>@font-face {font-family: "my_font";src: url("&lt;script&gt;alert(1).ttf");}</style>',
         ];
-        // names are not processed by basename — the full injection string must be escaped
-        yield 'font_face_escapes_malicious_name' => [
+        yield 'gotenberg_font_face escapes html injection in name inside a style tag' => [
             '<style>{{ gotenberg_font_face("foo.ttf", "</style><script>alert(\'xss\')</script>") }}</style>',
             '<style>@font-face {font-family: "&lt;/style&gt;&lt;script&gt;alert(&#039;xss&#039;)&lt;/script&gt;";src: url("foo.ttf");}</style>',
         ];
-        yield 'font_style_tag_escapes_malicious_name' => [
+        yield 'gotenberg_font_style_tag escapes html injection in name' => [
             '{{ gotenberg_font_style_tag("foo.ttf", "</style><script>alert(\'xss\')</script>") }}',
             '<style>@font-face {font-family: "&lt;/style&gt;&lt;script&gt;alert(&#039;xss&#039;)&lt;/script&gt;";src: url("foo.ttf");}</style>',
         ];
-        // | e('css') encodes every non-alphanumeric character (@ → \40, { → \7B, etc.),
-        // destroying the structure of the CSS rule — it is the wrong tool for a complete CSS rule
-        yield 'font_face_css_escape_filter_breaks_rule' => [
+        yield 'applying e("css") filter to gotenberg_font_face output destroys the css rule structure' => [
             '<style>{{ gotenberg_font_face("foo.ttf", "my_font") | e("css") }}</style>',
             '<style>\40 font\2D face\20 \7B font\2D family\3A \20 \22 my\5F font\22 \3B src\3A \20 url\28 \22 foo\2E ttf\22 \29 \3B \7D </style>',
         ];
