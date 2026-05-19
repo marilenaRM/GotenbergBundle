@@ -2,6 +2,7 @@
 
 namespace Sensiolabs\GotenbergBundle\Builder\Util;
 
+use Sensiolabs\GotenbergBundle\Enumeration\DownloadFromField;
 use Sensiolabs\GotenbergBundle\Exception\InvalidBuilderConfiguration;
 use Symfony\Component\HttpFoundation\Cookie;
 
@@ -62,13 +63,23 @@ class ValidatorFactory
     }
 
     /**
-     * @param list<array{url: string, extraHttpHeaders?: array<string, string>}> $downloadFrom
+     * @param list<array{url: string, extraHttpHeaders?: array<string, string>, field?: DownloadFromField|string}> $downloadFrom
      */
     public static function download(array $downloadFrom): void
     {
-        foreach ($downloadFrom as $file) {
+        foreach ($downloadFrom as $i => $file) {
             if (!\array_key_exists('url', $file)) {
                 throw new InvalidBuilderConfiguration('"url" is mandatory into "downloadFrom" array field.');
+            }
+
+            if (!\is_string($file['url'])) {
+                throw new InvalidBuilderConfiguration('"url" in "downloadFrom" must be a string.');
+            }
+
+            if (\array_key_exists('field', $file) && !$file['field'] instanceof DownloadFromField) {
+                if (DownloadFromField::tryFrom($file['field']) === null) {
+                    throw new InvalidBuilderConfiguration(\sprintf('Unsupported "downloadFrom[%d].field" "%s", expected one of "%s".', $i, $file['field'], implode('", "', array_column(DownloadFromField::cases(), 'value'))));
+                }
             }
         }
     }
