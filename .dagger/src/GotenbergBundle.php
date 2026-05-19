@@ -24,7 +24,7 @@ use function Dagger\dag;
 class GotenbergBundle
 {
     private const DEFAULT_PHP_VERSION = '8.4';
-    private const DEFAULT_SYMFONY_VERSION = '7.3.*';
+    private const DEFAULT_SYMFONY_VERSION = '8.0.*';
     private const DEFAULT_GOTENBERG_VERSION = '8.0';
 
     private function gotenbergContainer(
@@ -98,9 +98,9 @@ class GotenbergBundle
         return $phpContainer
             ->withExec(['composer', 'global', 'config', '--no-plugins', 'allow-plugins.symfony/flex', 'true'])
             ->withExec(['composer', 'global', 'require', 'symfony/flex'])
-            ->withExec(['composer', 'config', 'extra.symfony.require', $symfonyVersion])
+            ->withEnvVariable('SYMFONY_REQUIRE', $symfonyVersion)
             ->withExec(['composer', 'config', 'minimum-stability', $minimumStability])
-            ->withExec(['composer', 'update', '--prefer-dist', '--no-progress'])
+            ->withExec(['composer', 'update', '--prefer-dist', '--prefer-stable', '--no-progress'])
         ;
     }
 

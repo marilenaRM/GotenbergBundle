@@ -33,18 +33,37 @@ final class TestsGotenbergBundle
         return $this->symfonyVersion ??= $this->symfonyContainer->envVariable('SYMFONY_REQUIRE');
     }
 
+    private function getMajorMinorSymfonyVersion(): string
+    {
+        $symfonyVersion = $this->getSymfonyVersion();
+
+        $matches = [];
+
+        if (1 !== preg_match('#(?P<MajorMinor>^\d+\.\d+)#', $symfonyVersion, $matches)) {
+            return $symfonyVersion;
+        }
+
+        return $matches['MajorMinor'];
+    }
+
     #[DaggerFunction]
     #[Doc('Output the versions used for tests.')]
     #[ReturnsListOfType('string')]
     public function versions(): array
     {
         $phpVersion = $this->symfonyContainer->withExec(['php', '-v'])->stdout();
+        $symfonyVersion = $this->getSymfonyVersion();
         $composerPackages = $this->symfonyContainer->withExec(['composer', 'show'])->stdout();
 
         return [
             'PHP Version Debug:',
             '==================',
             $phpVersion,
+            '',
+            '',
+            'Symfony Version Debug:',
+            '======================',
+            $symfonyVersion,
             '',
             '',
             'Composer Packages:',
@@ -89,8 +108,19 @@ final class TestsGotenbergBundle
     #[Doc('Run PHPStan and returns the container it ran in.')]
     public function phpstan(): string
     {
+        $majorMinorSymfonyVersion = $this->getMajorMinorSymfonyVersion();
+
+        $rootDirectory = $this->symfonyContainer->directory('.');
+        $phpstanSpecificFileName = "phpstan-{$majorMinorSymfonyVersion}.dist.neon";
+
+        $cmd = ['php', '-dmemory_limit=-1', './vendor/bin/phpstan', 'analyse'];
+
+        if ($rootDirectory->exists($phpstanSpecificFileName)) {
+            $cmd = [...$cmd, "--configuration={$phpstanSpecificFileName}"];
+        }
+
         return $this->symfonyContainer
-            ->withExec(['php', '-dmemory_limit=-1', './vendor/bin/phpstan', 'analyse'])
+            ->withExec($cmd)
             ->stdout()
         ;
     }
