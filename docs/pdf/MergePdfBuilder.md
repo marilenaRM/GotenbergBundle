@@ -43,7 +43,7 @@ class YourController
 - [autoIndexBookmarks](#autoindexbookmarksbool-bool)
 - [bookmarks](#bookmarksarray-bookmarks)
 - [downloadFrom](#downloadfromarray-downloadfrom)
-- [embedFiles](#embedfilesstringablestring-paths)
+- [embedFiles](#embedfilesstringablesensiolabsgotenbergbundlebuildervalueobjectembeddedfilestring-paths)
 - [files](#filesstringablestring-paths)
 - [flatten](#flattenbool-bool)
 - [metadata](#metadataarray-metadata)
@@ -151,8 +151,8 @@ return $gotenberg
 ;
 ```
 
-### embedFiles(Stringable|string ...\$paths)
-Add files to embed.<br /><br />As assets files, by default the files to embed are fetch in the assets folder<br />of your application. For more information about path resolution go to<br />assets documentation.<br />
+### embedFiles(Stringable|Sensiolabs\GotenbergBundle\Builder\ValueObject\EmbeddedFile|string ...\$paths)
+Set files to embed.<br /><br />As assets files, by default the files to embed are fetch in the assets folder<br />of your application. For more information about path resolution go to<br />assets documentation.<br />
 
 > [!TIP]
 > See: [https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#attachments-pdf-engines](https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#attachments-pdf-engines)
@@ -161,6 +161,15 @@ Add files to embed.<br /><br />As assets files, by default the files to embed ar
 return $gotenberg
     // Your builder call as ->html() and the rest of your configuration code
     ->embedFiles('document.xml','document_2.json')
+    ->generate()
+    ->stream()
+;
+```
+
+```php
+return $gotenberg
+    // Your builder call as ->html() and the rest of your configuration code
+    ->embedFiles(new EmbeddedFile('factur-x.xml', 'Data'))
     ->generate()
     ->stream()
 ;
