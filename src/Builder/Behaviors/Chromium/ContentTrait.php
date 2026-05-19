@@ -71,14 +71,14 @@ trait ContentTrait
     }
 
     /**
+     * @deprecated since 1.2, header/footer support has been moved to PageMarginalTrait. Will be removed in 2.0.
+     *
      * @param string               $template #Template
      * @param array<string, mixed> $context
      *
      * @throws PartRenderingException if the template could not be rendered
      *
      * @see https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#header--footer
-     *
-     * @example header('header.html.twig', ['my_var' => 'value'])
      */
     #[WithConfigurationNode(new ArrayNodeBuilder('header', children: [
         new ScalarNodeBuilder('template', required: true, restrictTo: 'string'),
@@ -86,33 +86,44 @@ trait ContentTrait
     ]))]
     public function header(string $template, array $context = []): static
     {
-        return $this->withRenderedPart(Part::Header, $template, $context);
+        @trigger_error(\sprintf('Since sensiolabs/gotenberg-bundle 1.2: "%s" is deprecated and will be removed in 2.0. Header/footer support has been moved to "%s"; this builder does not support it.', __METHOD__, PageMarginalTrait::class), \E_USER_DEPRECATED);
+
+        return $this;
     }
 
     /**
-     * The raw html string to convert into PDF.
-     *
-     * Warning: Assets (css, images, etc...) cannot be parsed and loaded dynamically.
-     * Assets can still be loaded using https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#assets.
-     *
+     * @deprecated since 1.2, header/footer support has been moved to PageMarginalTrait. Will be removed in 2.0.
      * @see https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#header--footer
-     *
-     * @example headerRaw('<html><body><h1>The header</h1></body></html>')
      */
     public function headerRaw(string $html): static
     {
-        return $this->withRawPart(Part::Header, $html);
+        @trigger_error(\sprintf('Since sensiolabs/gotenberg-bundle 1.2: "%s" is deprecated and will be removed in 2.0. Header/footer support has been moved to "%s"; this builder does not support it.', __METHOD__, PageMarginalTrait::class), \E_USER_DEPRECATED);
+
+        return $this;
     }
 
     /**
+     * @deprecated since 1.2, header/footer support has been moved to PageMarginalTrait. Will be removed in 2.0.
+     * @see https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#header--footer
+     *
+     * @throws PartRenderingException if the file could not be loaded
+     */
+    public function headerFile(string $path): static
+    {
+        @trigger_error(\sprintf('Since sensiolabs/gotenberg-bundle 1.2: "%s" is deprecated and will be removed in 2.0. Header/footer support has been moved to "%s"; this builder does not support it.', __METHOD__, PageMarginalTrait::class), \E_USER_DEPRECATED);
+
+        return $this;
+    }
+
+    /**
+     * @deprecated since 1.2, header/footer support has been moved to PageMarginalTrait. Will be removed in 2.0.
+     *
      * @param string               $template #Template
      * @param array<string, mixed> $context
      *
      * @throws PartRenderingException if the template could not be rendered
      *
      * @see https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#header--footer
-     *
-     * @example footer('header.html.twig', ['my_var' => 'value'])
      */
     #[WithConfigurationNode(new ArrayNodeBuilder('footer', children: [
         new ScalarNodeBuilder('template', required: true, restrictTo: 'string'),
@@ -120,64 +131,33 @@ trait ContentTrait
     ]))]
     public function footer(string $template, array $context = []): static
     {
-        return $this->withRenderedPart(Part::Footer, $template, $context);
+        @trigger_error(\sprintf('Since sensiolabs/gotenberg-bundle 1.2: "%s" is deprecated and will be removed in 2.0. Header/footer support has been moved to "%s"; this builder does not support it.', __METHOD__, PageMarginalTrait::class), \E_USER_DEPRECATED);
+
+        return $this;
     }
 
     /**
-     * The raw html string to convert into PDF.
-     *
-     * Warning: Assets (css, images, etc...) cannot be parsed and loaded dynamically.
-     * Assets can still be loaded using https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#assets.
-     *
+     * @deprecated since 1.2, header/footer support has been moved to PageMarginalTrait. Will be removed in 2.0.
      * @see https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#header--footer
-     *
-     * @example footerRaw('<html><body><h6>The footer</h6></body></html>')
      */
     public function footerRaw(string $html): static
     {
-        return $this->withRawPart(Part::Footer, $html);
+        @trigger_error(\sprintf('Since sensiolabs/gotenberg-bundle 1.2: "%s" is deprecated and will be removed in 2.0. Header/footer support has been moved to "%s"; this builder does not support it.', __METHOD__, PageMarginalTrait::class), \E_USER_DEPRECATED);
+
+        return $this;
     }
 
     /**
-     * HTML file containing the header.
-     *
-     * As assets files, by default the HTML files are fetch in the assets folder of your application.
-     * If your HTML files are in another folder, you can override the default value of assets_directory in your
-     * configuration file config/sensiolabs_gotenberg.yml.
-     *
-     * Warning: Assets (css, images, etc...) cannot be parsed and loaded dynamically.
-     * Assets can still be loaded using https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#assets.
-     *
+     * @deprecated since 1.2, header/footer support has been moved to PageMarginalTrait. Will be removed in 2.0.
      * @see https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#header--footer
      *
-     * @throws PartRenderingException if the template could not be rendered
-     *
-     * @example headerFile('../templates/html/header.html')
-     */
-    public function headerFile(string $path): static
-    {
-        return $this->withFilePart(Part::Header, $path);
-    }
-
-    /**
-     * HTML file containing the footer.
-     *
-     * As assets files, by default the HTML files are fetch in the assets folder of your application.
-     * If your HTML files are in another folder, you can override the default value of assets_directory in your
-     * configuration file config/sensiolabs_gotenberg.yml.
-     *
-     * Warning: Assets (css, images, etc...) cannot be parsed and loaded dynamically.
-     * Assets can still be loaded using https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#assets.
-     *
-     * @see https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#header--footer
-     *
-     * @throws PartRenderingException if the template could not be rendered
-     *
-     * @example footerFile('../templates/html/footer.html')
+     * @throws PartRenderingException if the file could not be loaded
      */
     public function footerFile(string $path): static
     {
-        return $this->withFilePart(Part::Footer, $path);
+        @trigger_error(\sprintf('Since sensiolabs/gotenberg-bundle 1.2: "%s" is deprecated and will be removed in 2.0. Header/footer support has been moved to "%s"; this builder does not support it.', __METHOD__, PageMarginalTrait::class), \E_USER_DEPRECATED);
+
+        return $this;
     }
 
     /**
@@ -227,8 +207,6 @@ trait ContentTrait
     #[NormalizeGotenbergPayload]
     private function normalizeContent(): \Generator
     {
-        yield 'header.html' => NormalizerFactory::content();
         yield 'index.html' => NormalizerFactory::content();
-        yield 'footer.html' => NormalizerFactory::content();
     }
 }
