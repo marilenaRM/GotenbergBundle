@@ -5,6 +5,7 @@ namespace Sensiolabs\GotenbergBundle\Builder\Screenshot;
 use Sensiolabs\GotenbergBundle\Builder\AbstractBuilder;
 use Sensiolabs\GotenbergBundle\Builder\Attributes\NormalizeGotenbergPayload;
 use Sensiolabs\GotenbergBundle\Builder\Attributes\WithBuilderConfiguration;
+use Sensiolabs\GotenbergBundle\Builder\Behaviors\Chromium\DeprecatedBodyContentTrait;
 use Sensiolabs\GotenbergBundle\Builder\Behaviors\ChromiumScreenshotTrait;
 use Sensiolabs\GotenbergBundle\Builder\Behaviors\Dependencies\RequestContextAwareTrait;
 use Sensiolabs\GotenbergBundle\Builder\BuilderAssetInterface;
@@ -19,7 +20,12 @@ use Sensiolabs\GotenbergBundle\Exception\MissingRequiredFieldException;
 #[WithBuilderConfiguration(type: 'screenshot', name: 'url')]
 final class UrlScreenshotBuilder extends AbstractBuilder implements BuilderAssetInterface
 {
-    use ChromiumScreenshotTrait;
+    use ChromiumScreenshotTrait, DeprecatedBodyContentTrait {
+        DeprecatedBodyContentTrait::content insteadof ChromiumScreenshotTrait;
+        DeprecatedBodyContentTrait::contentRaw insteadof ChromiumScreenshotTrait;
+        DeprecatedBodyContentTrait::contentFile insteadof ChromiumScreenshotTrait;
+    }
+
     use RequestContextAwareTrait;
 
     public const ENDPOINT = '/forms/chromium/screenshot/url';

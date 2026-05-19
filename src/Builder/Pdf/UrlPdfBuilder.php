@@ -5,6 +5,7 @@ namespace Sensiolabs\GotenbergBundle\Builder\Pdf;
 use Sensiolabs\GotenbergBundle\Builder\AbstractBuilder;
 use Sensiolabs\GotenbergBundle\Builder\Attributes\NormalizeGotenbergPayload;
 use Sensiolabs\GotenbergBundle\Builder\Attributes\WithBuilderConfiguration;
+use Sensiolabs\GotenbergBundle\Builder\Behaviors\Chromium\DeprecatedBodyContentTrait;
 use Sensiolabs\GotenbergBundle\Builder\Behaviors\ChromiumPdfTrait;
 use Sensiolabs\GotenbergBundle\Builder\Behaviors\Dependencies\RequestContextAwareTrait;
 use Sensiolabs\GotenbergBundle\Builder\BuilderAssetInterface;
@@ -19,7 +20,12 @@ use Sensiolabs\GotenbergBundle\Exception\MissingRequiredFieldException;
 #[WithBuilderConfiguration(type: 'pdf', name: 'url')]
 final class UrlPdfBuilder extends AbstractBuilder implements BuilderAssetInterface
 {
-    use ChromiumPdfTrait;
+    use ChromiumPdfTrait, DeprecatedBodyContentTrait {
+        DeprecatedBodyContentTrait::content insteadof ChromiumPdfTrait;
+        DeprecatedBodyContentTrait::contentRaw insteadof ChromiumPdfTrait;
+        DeprecatedBodyContentTrait::contentFile insteadof ChromiumPdfTrait;
+    }
+
     use RequestContextAwareTrait;
 
     public const ENDPOINT = '/forms/chromium/convert/url';
