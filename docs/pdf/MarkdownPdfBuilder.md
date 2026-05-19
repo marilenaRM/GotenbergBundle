@@ -377,6 +377,15 @@ Adds a file, like an image, font, stylesheet, and so on.<br /><br />By default, 
 > [!TIP]
 > See: [https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#assets](https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#assets)
 
+```php
+return $gotenberg
+    // Your builder call as ->html() and the rest of your configuration code
+    ->addAsset('../img/ceo.jpeg', __DIR__'/../../public/admin.jpeg')
+    ->generate()
+    ->stream()
+;
+```
+
 ### assets(Stringable|string ...\$paths)
 Adds additional files, like images, fonts, stylesheets, and so on (overrides any previous files).<br /><br />By default, the assets files are fetch in the assets folder of your application.<br />If your assets are in another folder, you can override the default value of assets_directory in your<br />configuration file config/sensiolabs_gotenberg.yml.<br />
 
@@ -825,7 +834,7 @@ return $gotenberg
 ```php
 return $gotenberg
     // Your builder call as ->html() and the rest of your configuration code
-    ->footer('header.html.twig', ['my_var' => 'value'])
+    ->footer('footer.html.twig', ['my_var' => 'value'])
     ->generate()
     ->stream()
 ;
@@ -847,7 +856,7 @@ return $gotenberg
 ```
 
 ### footerRaw(string \$html)
-The raw html string to convert into PDF.<br /><br />Warning: Assets (css, images, etc...) cannot be parsed and loaded dynamically.<br />Assets can still be loaded using https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#assets.<br />
+The raw html string to use as the page footer.<br /><br />Warning: Assets (css, images, etc...) cannot be parsed and loaded dynamically.<br />Assets can still be loaded using https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#assets.<br />
 
 > [!TIP]
 > See: [https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#header--footer](https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#header--footer)
@@ -890,7 +899,7 @@ return $gotenberg
 ```
 
 ### headerRaw(string \$html)
-The raw html string to convert into PDF.<br /><br />Warning: Assets (css, images, etc...) cannot be parsed and loaded dynamically.<br />Assets can still be loaded using https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#assets.<br />
+The raw html string to use as the page header.<br /><br />Warning: Assets (css, images, etc...) cannot be parsed and loaded dynamically.<br />Assets can still be loaded using https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#assets.<br />
 
 > [!TIP]
 > See: [https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#header--footer](https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#header--footer)
