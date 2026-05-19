@@ -131,6 +131,7 @@ class BuilderParser
 
         $this->prepareBuilderFromClass($class);
         $this->cleanBuilderFromClass($class);
+        $this->filterDeprecatedMethods($class);
 
         foreach ($this->parts['methods']['@'] as $methodName => $parts) {
             $package = $parts['package'] ?? '@';
@@ -341,7 +342,7 @@ class BuilderParser
                 $this->parts['methods']['@'][$method->getShortName()]['package'] = $newPackage;
             }
 
-            if (isset($parsedDocBlock['description']) && [''] !== $parsedDocBlock['description']) {
+            if (isset($parsedDocBlock['description']) && [] !== $parsedDocBlock['description'] && [''] !== $parsedDocBlock['description']) {
                 $this->parts['methods']['@'][$method->getShortName()]['description'] = $parsedDocBlock['description'];
             }
 
@@ -354,6 +355,24 @@ class BuilderParser
                     $this->parts['methods']['@'][$method->getShortName()]['tags']['see'] ?? [],
                     $parsedDocBlock['tags']['see'],
                 )));
+            }
+
+            if (isset($parsedDocBlock['tags']['example']) && [] !== $parsedDocBlock['tags']['example']) {
+                $this->parts['methods']['@'][$method->getShortName()]['tags']['example'] = $parsedDocBlock['tags']['example'];
+            }
+        }
+    }
+
+    /**
+     * @param ReflectionClass<object> $class
+     */
+    private function filterDeprecatedMethods(ReflectionClass $class): void
+    {
+        foreach ($class->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
+            if (str_contains($method->getDocComment() ?: '', '@deprecated')) {
+                unset($this->methodsSignature[$method->getName()]);
+                unset($this->methodsLink[$method->getName()]);
+                unset($this->parts['methods']['@'][$method->getShortName()]);
             }
         }
     }
