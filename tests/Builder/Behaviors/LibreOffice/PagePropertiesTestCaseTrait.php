@@ -267,4 +267,64 @@ trait PagePropertiesTestCaseTrait
 
         $this->assertGotenbergFormData('updateIndexes', 'false');
     }
+
+    public function testWatermarkText(): void
+    {
+        $this->getDefaultBuilder()
+            ->watermarkText('CONFIDENTIAL')
+            ->generate()
+        ;
+
+        $this->assertGotenbergFormData('nativeWatermarkText', 'CONFIDENTIAL');
+    }
+
+    public function testWatermarkColor(): void
+    {
+        $this->getDefaultBuilder()
+            ->watermarkColor('#FF0000')
+            ->generate()
+        ;
+
+        $this->assertGotenbergFormData('nativeWatermarkColor', '16711680');
+    }
+
+    public function testWatermarkFontHeight(): void
+    {
+        $this->getDefaultBuilder()
+            ->watermarkFontHeight(50)
+            ->generate()
+        ;
+
+        $this->assertGotenbergFormData('nativeWatermarkFontHeight', '50');
+    }
+
+    public function testWatermarkRotateAngle(): void
+    {
+        $this->getDefaultBuilder()
+            ->watermarkRotateAngle(-450)
+            ->generate()
+        ;
+
+        $this->assertGotenbergFormData('nativeWatermarkRotateAngle', '-450');
+    }
+
+    public function testWatermarkFontName(): void
+    {
+        $this->getDefaultBuilder()
+            ->watermarkFontName('Liberation Sans')
+            ->generate()
+        ;
+
+        $this->assertGotenbergFormData('nativeWatermarkFontName', 'Liberation Sans');
+    }
+
+    public function testTiledWatermarkText(): void
+    {
+        $this->getDefaultBuilder()
+            ->tiledWatermarkText('DRAFT')
+            ->generate()
+        ;
+
+        $this->assertGotenbergFormData('nativeTiledWatermarkText', 'DRAFT');
+    }
 }

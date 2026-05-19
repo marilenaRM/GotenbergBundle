@@ -400,6 +400,108 @@ trait PagePropertiesTrait
         return $this;
     }
 
+    /**
+     * Set the watermark text to render on every page during PDF export.
+     *
+     * @see https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#native-watermarks-libreoffice
+     *
+     * @example watermarkText('CONFIDENTIAL')
+     */
+    #[WithConfigurationNode(new ScalarNodeBuilder('watermark_text'))]
+    public function watermarkText(string $text): static
+    {
+        $this->logWarningIfVersionIs('<', '8.28', 'The option nativeWatermarkText is not available.');
+
+        $this->getBodyBag()->set('nativeWatermarkText', $text);
+
+        return $this;
+    }
+
+    /**
+     * Set the watermark text color as a hex string (e.g., '#FF0000').
+     *
+     * @see https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#native-watermarks-libreoffice
+     *
+     * @example watermarkColor('#FF0000')
+     */
+    #[WithConfigurationNode(new ScalarNodeBuilder('watermark_color'))]
+    public function watermarkColor(string $color): static
+    {
+        $this->logWarningIfVersionIs('<', '8.28', 'The option nativeWatermarkColor is not available.');
+
+        $this->getBodyBag()->set('nativeWatermarkColor', $color);
+
+        return $this;
+    }
+
+    /**
+     * Set the watermark font height in points.
+     *
+     * @see https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#native-watermarks-libreoffice
+     *
+     * @example watermarkFontHeight(50)
+     */
+    #[WithConfigurationNode(new IntegerNodeBuilder('watermark_font_height'))]
+    public function watermarkFontHeight(int $height): static
+    {
+        $this->logWarningIfVersionIs('<', '8.28', 'The option nativeWatermarkFontHeight is not available.');
+
+        $this->getBodyBag()->set('nativeWatermarkFontHeight', $height);
+
+        return $this;
+    }
+
+    /**
+     * Set the watermark rotation angle in tenths of a degree (e.g., 450 = 45°).
+     *
+     * @see https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#native-watermarks-libreoffice
+     *
+     * @example watermarkRotateAngle(-450)
+     */
+    #[WithConfigurationNode(new IntegerNodeBuilder('watermark_rotate_angle'))]
+    public function watermarkRotateAngle(int $angle): static
+    {
+        $this->logWarningIfVersionIs('<', '8.28', 'The option nativeWatermarkRotateAngle is not available.');
+
+        $this->getBodyBag()->set('nativeWatermarkRotateAngle', $angle);
+
+        return $this;
+    }
+
+    /**
+     * Set the watermark font name.
+     *
+     * @see https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#native-watermarks-libreoffice
+     *
+     * @example watermarkFontName('Liberation Sans')
+     */
+    #[WithConfigurationNode(new ScalarNodeBuilder('watermark_font_name'))]
+    public function watermarkFontName(string $fontName): static
+    {
+        $this->logWarningIfVersionIs('<', '8.28', 'The option nativeWatermarkFontName is not available.');
+
+        $this->getBodyBag()->set('nativeWatermarkFontName', $fontName);
+
+        return $this;
+    }
+
+    /**
+     * Set a tiled watermark text rendered across every page during PDF export.
+     *
+     * @see https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#native-watermarks-libreoffice
+     *
+     * @example tiledWatermarkText('DRAFT')
+     */
+    #[WithConfigurationNode(new ScalarNodeBuilder('tiled_watermark_text'))]
+    public function tiledWatermarkText(string $text): static
+    {
+        $this->logWarningIfVersionIs('<', '8.28', 'The option nativeTiledWatermarkText is not available.');
+
+        $this->getBodyBag()->set('nativeTiledWatermarkText', $text);
+
+        return $this;
+    }
+
     #[NormalizeGotenbergPayload]
     private function normalizePageProperties(): \Generator
     {
@@ -425,5 +527,8 @@ trait PagePropertiesTrait
         yield 'reduceImageResolution' => NormalizerFactory::bool();
         yield 'maxImageResolution' => NormalizerFactory::enum();
         yield 'updateIndexes' => NormalizerFactory::bool();
+        yield 'nativeWatermarkColor' => NormalizerFactory::hexColor();
+        yield 'nativeWatermarkFontHeight' => NormalizerFactory::int();
+        yield 'nativeWatermarkRotateAngle' => NormalizerFactory::int();
     }
 }
