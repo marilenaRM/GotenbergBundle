@@ -9,6 +9,9 @@ use Sensiolabs\GotenbergBundle\Builder\BodyBag;
 use Sensiolabs\GotenbergBundle\Builder\Util\NormalizerFactory;
 use Sensiolabs\GotenbergBundle\Builder\Util\ValidatorFactory;
 use Sensiolabs\GotenbergBundle\Enumeration\ImageResolutionDPI;
+use Sensiolabs\GotenbergBundle\Enumeration\InitialView;
+use Sensiolabs\GotenbergBundle\Enumeration\Magnification;
+use Sensiolabs\GotenbergBundle\Enumeration\PageLayout;
 use Sensiolabs\GotenbergBundle\NodeBuilder\BooleanNodeBuilder;
 use Sensiolabs\GotenbergBundle\NodeBuilder\IntegerNodeBuilder;
 use Sensiolabs\GotenbergBundle\NodeBuilder\NativeEnumNodeBuilder;
@@ -502,6 +505,330 @@ trait PagePropertiesTrait
         return $this;
     }
 
+    /**
+     * Specify the initial view when opening the PDF.
+     *
+     * @see https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences
+     *
+     * @example initialView(InitialView::Thumbnails)
+     */
+    #[WithConfigurationNode(new NativeEnumNodeBuilder('initial_view', enumClass: InitialView::class))]
+    public function initialView(InitialView|null $initialView): self
+    {
+        $this->logWarningIfVersionIs('<', '8.29', 'The option initialView is not available.');
+
+        if (!$initialView) {
+            $this->getBodyBag()->unset('initialView');
+        } else {
+            $this->getBodyBag()->set('initialView', $initialView);
+        }
+
+        return $this;
+    }
+
+    /**
+     * The page on which the PDF opens.
+     *
+     * @see https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences
+     *
+     * @param int<1, max>|null $initialPage
+     *
+     * @example initialPage(3)
+     */
+    #[WithConfigurationNode(new IntegerNodeBuilder('initial_page', min: 1))]
+    public function initialPage(int|null $initialPage): self
+    {
+        $this->logWarningIfVersionIs('<', '8.29', 'The option initialPage is not available.');
+
+        if (null === $initialPage) {
+            $this->getBodyBag()->unset('initialPage');
+        } else {
+            ValidatorFactory::page($initialPage);
+            $this->getBodyBag()->set('initialPage', $initialPage);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Initial magnification level.
+     *
+     * @see https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences
+     *
+     * @example magnification(Magnification::FitVisible)
+     */
+    #[WithConfigurationNode(new NativeEnumNodeBuilder('magnification', enumClass: Magnification::class))]
+    public function magnification(Magnification|null $magnification): self
+    {
+        $this->logWarningIfVersionIs('<', '8.29', 'The option magnification is not available.');
+
+        if (!$magnification) {
+            $this->getBodyBag()->unset('magnification');
+        } else {
+            $this->getBodyBag()->set('magnification', $magnification);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Initial zoom percentage when magnification is set to Magnification::UseZoomValue (4).
+     *
+     * @see https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences
+     *
+     * @param int<1, 100>|null $zoom
+     *
+     * @example zoom(3)
+     */
+    #[WithConfigurationNode(new IntegerNodeBuilder('zoom', min: 1, max: 100))]
+    public function zoom(int|null $zoom): self
+    {
+        $this->logWarningIfVersionIs('<', '8.29', 'The option zoom is not available.');
+
+        if (null === $zoom) {
+            $this->getBodyBag()->unset('zoom');
+        } else {
+            ValidatorFactory::zoom($zoom);
+            $this->getBodyBag()->set('zoom', $zoom);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Page layout.
+     *
+     * @see https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences
+     *
+     * @example pageLayout(PageLayout::SinglePage)
+     */
+    #[WithConfigurationNode(new NativeEnumNodeBuilder('page_layout', enumClass: PageLayout::class))]
+    public function pageLayout(PageLayout|null $pageLayout): self
+    {
+        $this->logWarningIfVersionIs('<', '8.29', 'The option pageLayout is not available.');
+
+        if (!$pageLayout) {
+            $this->getBodyBag()->unset('pageLayout');
+        } else {
+            $this->getBodyBag()->set('pageLayout', $pageLayout);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Place the first page on the left when using two-column page layout.
+     *
+     * @see https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences
+     *
+     * @example firstPageOnLeft() // is same as `->firstPageOnLeft(true)`
+     */
+    #[WithConfigurationNode(new BooleanNodeBuilder('first_page_on_left'))]
+    public function firstPageOnLeft(bool $bool = true): static
+    {
+        $this->logWarningIfVersionIs('<', '8.29', 'The option firstPageOnLeft is not available.');
+
+        if (!$bool) {
+            $this->getBodyBag()->unset('firstPageOnLeft');
+        } else {
+            $this->getBodyBag()->set('firstPageOnLeft', $bool);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Resize the viewer window to the size of the first page.
+     *
+     * @see https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences
+     *
+     * @example resizeWindowToInitialPage() // is same as `->resizeWindowToInitialPage(true)`
+     */
+    #[WithConfigurationNode(new BooleanNodeBuilder('resize_window_to_initial_page'))]
+    public function resizeWindowToInitialPage(bool $bool = true): static
+    {
+        $this->logWarningIfVersionIs('<', '8.29', 'The option resizeWindowToInitialPage is not available.');
+
+        if (!$bool) {
+            $this->getBodyBag()->unset('resizeWindowToInitialPage');
+        } else {
+            $this->getBodyBag()->set('resizeWindowToInitialPage', $bool);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Center the viewer window on the screen.
+     *
+     * @see https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences
+     *
+     * @example centerWindow() // is same as `->centerWindow(true)`
+     */
+    #[WithConfigurationNode(new BooleanNodeBuilder('center_window'))]
+    public function centerWindow(bool $bool = true): static
+    {
+        $this->logWarningIfVersionIs('<', '8.29', 'The option centerWindow is not available.');
+
+        if (!$bool) {
+            $this->getBodyBag()->unset('centerWindow');
+        } else {
+            $this->getBodyBag()->set('centerWindow', $bool);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Open the PDF in full-screen mode.
+     *
+     * @see https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences
+     *
+     * @example openInFullScreenMode() // is same as `->openInFullScreenMode(true)`
+     */
+    #[WithConfigurationNode(new BooleanNodeBuilder('open_in_full_screen_mode'))]
+    public function openInFullScreenMode(bool $bool = true): static
+    {
+        $this->logWarningIfVersionIs('<', '8.29', 'The option openInFullScreenMode is not available.');
+
+        if (!$bool) {
+            $this->getBodyBag()->unset('openInFullScreenMode');
+        } else {
+            $this->getBodyBag()->set('openInFullScreenMode', $bool);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Display the document title in the viewer title bar instead of the filename.
+     *
+     * @see https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences
+     *
+     * @example displayPDFDocumentTitle() // is same as `->displayPDFDocumentTitle(true)`
+     */
+    #[WithConfigurationNode(new BooleanNodeBuilder('display_pdf_document_title'))]
+    public function displayPDFDocumentTitle(bool $bool = true): static
+    {
+        $this->logWarningIfVersionIs('<', '8.29', 'The option displayPDFDocumentTitle is not available.');
+
+        if (!$bool) {
+            $this->getBodyBag()->unset('displayPDFDocumentTitle');
+        } else {
+            $this->getBodyBag()->set('displayPDFDocumentTitle', $bool);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Hide the viewer menu bar.
+     *
+     * @see https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences
+     *
+     * @example hideViewerMenubar() // is same as `->hideViewerMenubar(true)`
+     */
+    #[WithConfigurationNode(new BooleanNodeBuilder('hide_viewer_menubar'))]
+    public function hideViewerMenubar(bool $bool = true): static
+    {
+        $this->logWarningIfVersionIs('<', '8.29', 'The option hideViewerMenubar is not available.');
+
+        if (!$bool) {
+            $this->getBodyBag()->unset('hideViewerMenubar');
+        } else {
+            $this->getBodyBag()->set('hideViewerMenubar', $bool);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Hide the viewer toolbar.
+     *
+     * @see https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences
+     *
+     * @example hideViewerToolbar() // is same as `->hideViewerToolbar(true)`
+     */
+    #[WithConfigurationNode(new BooleanNodeBuilder('hide_viewer_toolbar'))]
+    public function hideViewerToolbar(bool $bool = true): static
+    {
+        $this->logWarningIfVersionIs('<', '8.29', 'The option hideViewerToolbar is not available.');
+
+        if (!$bool) {
+            $this->getBodyBag()->unset('hideViewerToolbar');
+        } else {
+            $this->getBodyBag()->set('hideViewerToolbar', $bool);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Hide the viewer window controls.
+     *
+     * @see https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences
+     *
+     * @example hideViewerWindowControls() // is same as `->hideViewerWindowControls(true)`
+     */
+    #[WithConfigurationNode(new BooleanNodeBuilder('hide_viewer_window_controls'))]
+    public function hideViewerWindowControls(bool $bool = true): static
+    {
+        $this->logWarningIfVersionIs('<', '8.29', 'The option hideViewerWindowControls is not available.');
+
+        if (!$bool) {
+            $this->getBodyBag()->unset('hideViewerWindowControls');
+        } else {
+            $this->getBodyBag()->set('hideViewerWindowControls', $bool);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use transition effects when advancing slides in Impress presentations.
+     *
+     * @see https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences
+     *
+     * @example useTransitionEffects() // is same as `->useTransitionEffects(true)`
+     */
+    #[WithConfigurationNode(new BooleanNodeBuilder('use_transition_effects'))]
+    public function useTransitionEffects(bool $bool = true): static
+    {
+        $this->logWarningIfVersionIs('<', '8.29', 'The option useTransitionEffects is not available.');
+
+        if (!$bool) {
+            $this->getBodyBag()->unset('useTransitionEffects');
+        } else {
+            $this->getBodyBag()->set('useTransitionEffects', $bool);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Number of bookmark levels to show when opening the PDF. -1 shows all levels.
+     *
+     * @see https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences
+     *
+     * @param int<-1, max>|null $openBookmarkLevels
+     *
+     * @example openBookmarkLevels(-1)
+     */
+    #[WithConfigurationNode(new IntegerNodeBuilder('open_bookmark_levels', min: -1))]
+    public function openBookmarkLevels(int|null $openBookmarkLevels): self
+    {
+        $this->logWarningIfVersionIs('<', '8.29', 'The option openBookmarkLevels is not available.');
+
+        if (null === $openBookmarkLevels) {
+            $this->getBodyBag()->unset('openBookmarkLevels');
+        } else {
+            ValidatorFactory::bookmarkLevels($openBookmarkLevels);
+            $this->getBodyBag()->set('openBookmarkLevels', $openBookmarkLevels);
+        }
+
+        return $this;
+    }
+
     #[NormalizeGotenbergPayload]
     private function normalizePageProperties(): \Generator
     {
@@ -530,5 +857,20 @@ trait PagePropertiesTrait
         yield 'nativeWatermarkColor' => NormalizerFactory::hexColor();
         yield 'nativeWatermarkFontHeight' => NormalizerFactory::int();
         yield 'nativeWatermarkRotateAngle' => NormalizerFactory::int();
+        yield 'initialView' => NormalizerFactory::enum();
+        yield 'initialPage' => NormalizerFactory::int();
+        yield 'magnification' => NormalizerFactory::enum();
+        yield 'zoom' => NormalizerFactory::int();
+        yield 'pageLayout' => NormalizerFactory::enum();
+        yield 'firstPageOnLeft' => NormalizerFactory::bool();
+        yield 'resizeWindowToInitialPage' => NormalizerFactory::bool();
+        yield 'centerWindow' => NormalizerFactory::bool();
+        yield 'openInFullScreenMode' => NormalizerFactory::bool();
+        yield 'displayPDFDocumentTitle' => NormalizerFactory::bool();
+        yield 'hideViewerMenubar' => NormalizerFactory::bool();
+        yield 'hideViewerToolbar' => NormalizerFactory::bool();
+        yield 'hideViewerWindowControls' => NormalizerFactory::bool();
+        yield 'useTransitionEffects' => NormalizerFactory::bool();
+        yield 'openBookmarkLevels' => NormalizerFactory::int();
     }
 }

@@ -72,7 +72,9 @@ class YourController
 - [addMetadata](#addmetadatastring-key-string-value)
 - [addOriginalDocumentAsStream](#addoriginaldocumentasstreambool-bool)
 - [allowDuplicateFieldNames](#allowduplicatefieldnamesbool-bool)
+- [centerWindow](#centerwindowbool-bool)
 - [convertOooTargetToPdfTarget](#convertoootargettopdftargetbool-bool)
+- [displayPDFDocumentTitle](#displaypdfdocumenttitlebool-bool)
 - [doNotExportBookmarks](#donotexportbookmarksbool-bool)
 - [doNotExportFormFields](#donotexportformfieldsbool-bool)
 - [doNotUpdateIndexes](#donotupdateindexesbool-bool)
@@ -87,18 +89,29 @@ class YourController
 - [exportOnlyNotesPages](#exportonlynotespagesbool-bool)
 - [exportPlaceholders](#exportplaceholdersbool-bool)
 - [files](#filesstringablestring-paths)
+- [firstPageOnLeft](#firstpageonleftbool-bool)
 - [flatten](#flattenbool-bool)
+- [hideViewerMenubar](#hideviewermenubarbool-bool)
+- [hideViewerToolbar](#hideviewertoolbarbool-bool)
+- [hideViewerWindowControls](#hideviewerwindowcontrolsbool-bool)
+- [initialPage](#initialpageint-initialpage)
+- [initialView](#initialviewsensiolabsgotenbergbundleenumerationinitialview-initialview)
 - [landscape](#landscapebool-bool)
 - [losslessImageCompression](#losslessimagecompressionbool-bool)
+- [magnification](#magnificationsensiolabsgotenbergbundleenumerationmagnification-magnification)
 - [maxImageResolution](#maximageresolutionsensiolabsgotenbergbundleenumerationimageresolutiondpi-resolution)
 - [merge](#mergebool-bool)
 - [metadata](#metadataarray-metadata)
 - [nativePageRanges](#nativepagerangesstring-ranges)
+- [openBookmarkLevels](#openbookmarklevelsint-openbookmarklevels)
+- [openInFullScreenMode](#openinfullscreenmodebool-bool)
+- [pageLayout](#pagelayoutsensiolabsgotenbergbundleenumerationpagelayout-pagelayout)
 - [password](#passwordstring-password)
 - [pdfFormat](#pdfformatsensiolabsgotenbergbundleenumerationpdfformat-format)
 - [pdfUniversalAccess](#pdfuniversalaccessbool-bool)
 - [quality](#qualityint-quality)
 - [reduceImageResolution](#reduceimageresolutionbool-bool)
+- [resizeWindowToInitialPage](#resizewindowtoinitialpagebool-bool)
 - [rotateAngle](#rotateanglesensiolabsgotenbergbundleenumerationrotateangle-rotateangle)
 - [rotatePages](#rotatepagesstring-rotatepages)
 - [singlePageSheets](#singlepagesheetsbool-bool)
@@ -112,6 +125,7 @@ class YourController
 - [stampPages](#stamppagesstring-stamppages)
 - [stampSource](#stampsourcesensiolabsgotenbergbundleenumerationstampsource-stampsource)
 - [tiledWatermarkText](#tiledwatermarktextstring-text)
+- [useTransitionEffects](#usetransitioneffectsbool-bool)
 - [watermarkColor](#watermarkcolorstring-color)
 - [watermarkExpression](#watermarkexpressionstring-watermarkexpression)
 - [watermarkFile](#watermarkfilestringablestring-path)
@@ -122,6 +136,7 @@ class YourController
 - [watermarkRotateAngle](#watermarkrotateangleint-angle)
 - [watermarkSource](#watermarksourcesensiolabsgotenbergbundleenumerationwatermarksource-watermarksource)
 - [watermarkText](#watermarktextstring-text)
+- [zoom](#zoomint-zoom)
 - [addWebhookExtraHeaders](#addwebhookextraheadersarray-extrahttpheaders)
 - [webhook](#webhookarray-webhook)
 - [webhookConfiguration](#webhookconfigurationstring-name)
@@ -174,6 +189,21 @@ return $gotenberg
 ;
 ```
 
+### centerWindow(bool \$bool)
+Center the viewer window on the screen.<br />
+
+> [!TIP]
+> See: [https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences](https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences)
+
+```php
+return $gotenberg
+    // Your builder call as ->html() and the rest of your configuration code
+    ->centerWindow() // is same as `->centerWindow(true)`
+    ->generate()
+    ->stream()
+;
+```
+
 ### convertOooTargetToPdfTarget(bool \$bool)
 Specify that the target documents with .od[tpgs] extension, will have that extension changed to .pdf when the link is exported to PDF. The source document remains untouched.<br />
 
@@ -181,6 +211,21 @@ Specify that the target documents with .od[tpgs] extension, will have that exten
 return $gotenberg
     // Your builder call as ->html() and the rest of your configuration code
     ->convertOooTargetToPdfTarget()  // is same as `->convertOooTargetToPdfTarget(true)`
+    ->generate()
+    ->stream()
+;
+```
+
+### displayPDFDocumentTitle(bool \$bool)
+Display the document title in the viewer title bar instead of the filename.<br />
+
+> [!TIP]
+> See: [https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences](https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences)
+
+```php
+return $gotenberg
+    // Your builder call as ->html() and the rest of your configuration code
+    ->displayPDFDocumentTitle() // is same as `->displayPDFDocumentTitle(true)`
     ->generate()
     ->stream()
 ;
@@ -381,6 +426,21 @@ return $gotenberg
 ;
 ```
 
+### firstPageOnLeft(bool \$bool)
+Place the first page on the left when using two-column page layout.<br />
+
+> [!TIP]
+> See: [https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences](https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences)
+
+```php
+return $gotenberg
+    // Your builder call as ->html() and the rest of your configuration code
+    ->firstPageOnLeft() // is same as `->firstPageOnLeft(true)`
+    ->generate()
+    ->stream()
+;
+```
+
 ### flatten(bool \$bool)
 Flattening a PDF combines all its contents into a single layer. (default false).<br />
 
@@ -391,6 +451,81 @@ Flattening a PDF combines all its contents into a single layer. (default false).
 return $gotenberg
     // Your builder call as ->html() and the rest of your configuration code
     ->flatten() // is same as `->flatten(true)`
+    ->generate()
+    ->stream()
+;
+```
+
+### hideViewerMenubar(bool \$bool)
+Hide the viewer menu bar.<br />
+
+> [!TIP]
+> See: [https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences](https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences)
+
+```php
+return $gotenberg
+    // Your builder call as ->html() and the rest of your configuration code
+    ->hideViewerMenubar() // is same as `->hideViewerMenubar(true)`
+    ->generate()
+    ->stream()
+;
+```
+
+### hideViewerToolbar(bool \$bool)
+Hide the viewer toolbar.<br />
+
+> [!TIP]
+> See: [https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences](https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences)
+
+```php
+return $gotenberg
+    // Your builder call as ->html() and the rest of your configuration code
+    ->hideViewerToolbar() // is same as `->hideViewerToolbar(true)`
+    ->generate()
+    ->stream()
+;
+```
+
+### hideViewerWindowControls(bool \$bool)
+Hide the viewer window controls.<br />
+
+> [!TIP]
+> See: [https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences](https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences)
+
+```php
+return $gotenberg
+    // Your builder call as ->html() and the rest of your configuration code
+    ->hideViewerWindowControls() // is same as `->hideViewerWindowControls(true)`
+    ->generate()
+    ->stream()
+;
+```
+
+### initialPage(?int \$initialPage)
+The page on which the PDF opens.<br />
+
+> [!TIP]
+> See: [https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences](https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences)
+
+```php
+return $gotenberg
+    // Your builder call as ->html() and the rest of your configuration code
+    ->initialPage(3)
+    ->generate()
+    ->stream()
+;
+```
+
+### initialView(?Sensiolabs\GotenbergBundle\Enumeration\InitialView \$initialView)
+Specify the initial view when opening the PDF.<br />
+
+> [!TIP]
+> See: [https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences](https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences)
+
+```php
+return $gotenberg
+    // Your builder call as ->html() and the rest of your configuration code
+    ->initialView(InitialView::Thumbnails)
     ->generate()
     ->stream()
 ;
@@ -418,6 +553,21 @@ Specify if images are exported to PDF using a lossless compression format like P
 return $gotenberg
     // Your builder call as ->html() and the rest of your configuration code
     ->losslessImageCompression()  // is same as `->losslessImageCompression(true)`
+    ->generate()
+    ->stream()
+;
+```
+
+### magnification(?Sensiolabs\GotenbergBundle\Enumeration\Magnification \$magnification)
+Initial magnification level.<br />
+
+> [!TIP]
+> See: [https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences](https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences)
+
+```php
+return $gotenberg
+    // Your builder call as ->html() and the rest of your configuration code
+    ->magnification(Magnification::FitVisible)
     ->generate()
     ->stream()
 ;
@@ -473,6 +623,51 @@ Page ranges to print, e.g., '1-4' - empty means all pages.<br />
 return $gotenberg
     // Your builder call as ->html() and the rest of your configuration code
     ->nativePageRanges('1-5')
+    ->generate()
+    ->stream()
+;
+```
+
+### openBookmarkLevels(?int \$openBookmarkLevels)
+Number of bookmark levels to show when opening the PDF. -1 shows all levels.<br />
+
+> [!TIP]
+> See: [https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences](https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences)
+
+```php
+return $gotenberg
+    // Your builder call as ->html() and the rest of your configuration code
+    ->openBookmarkLevels(-1)
+    ->generate()
+    ->stream()
+;
+```
+
+### openInFullScreenMode(bool \$bool)
+Open the PDF in full-screen mode.<br />
+
+> [!TIP]
+> See: [https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences](https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences)
+
+```php
+return $gotenberg
+    // Your builder call as ->html() and the rest of your configuration code
+    ->openInFullScreenMode() // is same as `->openInFullScreenMode(true)`
+    ->generate()
+    ->stream()
+;
+```
+
+### pageLayout(?Sensiolabs\GotenbergBundle\Enumeration\PageLayout \$pageLayout)
+Page layout.<br />
+
+> [!TIP]
+> See: [https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences](https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences)
+
+```php
+return $gotenberg
+    // Your builder call as ->html() and the rest of your configuration code
+    ->pageLayout(PageLayout::SinglePage)
     ->generate()
     ->stream()
 ;
@@ -539,6 +734,21 @@ Specify if the resolution of each image is reduced to the resolution specified b
 return $gotenberg
     // Your builder call as ->html() and the rest of your configuration code
     ->reduceImageResolution()  // is same as `->reduceImageResolution(true)`
+    ->generate()
+    ->stream()
+;
+```
+
+### resizeWindowToInitialPage(bool \$bool)
+Resize the viewer window to the size of the first page.<br />
+
+> [!TIP]
+> See: [https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences](https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences)
+
+```php
+return $gotenberg
+    // Your builder call as ->html() and the rest of your configuration code
+    ->resizeWindowToInitialPage() // is same as `->resizeWindowToInitialPage(true)`
     ->generate()
     ->stream()
 ;
@@ -736,6 +946,21 @@ return $gotenberg
 ;
 ```
 
+### useTransitionEffects(bool \$bool)
+Use transition effects when advancing slides in Impress presentations.<br />
+
+> [!TIP]
+> See: [https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences](https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences)
+
+```php
+return $gotenberg
+    // Your builder call as ->html() and the rest of your configuration code
+    ->useTransitionEffects() // is same as `->useTransitionEffects(true)`
+    ->generate()
+    ->stream()
+;
+```
+
 ### watermarkColor(string \$color)
 Set the watermark text color as a hex string (e.g., '#FF0000').<br />
 
@@ -881,6 +1106,21 @@ Set the watermark text to render on every page during PDF export.<br />
 return $gotenberg
     // Your builder call as ->html() and the rest of your configuration code
     ->watermarkText('CONFIDENTIAL')
+    ->generate()
+    ->stream()
+;
+```
+
+### zoom(?int \$zoom)
+Initial zoom percentage when magnification is set to Magnification::UseZoomValue (4).<br />
+
+> [!TIP]
+> See: [https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences](https://gotenberg.dev/docs/convert-with-libreoffice/convert-to-pdf#pdf-viewer-preferences)
+
+```php
+return $gotenberg
+    // Your builder call as ->html() and the rest of your configuration code
+    ->zoom(3)
     ->generate()
     ->stream()
 ;
