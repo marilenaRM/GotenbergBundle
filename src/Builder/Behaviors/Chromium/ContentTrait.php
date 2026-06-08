@@ -71,8 +71,6 @@ trait ContentTrait
     }
 
     /**
-     * @deprecated since 1.2, header/footer support has been moved to PageMarginalTrait. Will be removed in 2.0.
-     *
      * @param string               $template #Template
      * @param array<string, mixed> $context
      *
@@ -84,40 +82,33 @@ trait ContentTrait
         new ScalarNodeBuilder('template', required: true, restrictTo: 'string'),
         new ArrayNodeBuilder('context', normalizeKeys: false, prototype: 'variable'),
     ]))]
+    #[\Deprecated(message: 'Will be removed in 2.0. Use Sensiolabs\GotenbergBundle\Builder\Behaviors\Chromium\PageMarginalTrait instead', since: 'sensiolabs/GotenbergBundle:1.4')]
     public function header(string $template, array $context = []): static
     {
-        @trigger_error(\sprintf('Since sensiolabs/gotenberg-bundle 1.2: "%s" is deprecated and will be removed in 2.0. Header/footer support has been moved to "%s"; this builder does not support it.', __METHOD__, PageMarginalTrait::class), \E_USER_DEPRECATED);
-
-        return $this;
+        return $this->withRenderedPart(Part::Header, $template, $context);
     }
 
     /**
-     * @deprecated since 1.2, header/footer support has been moved to PageMarginalTrait. Will be removed in 2.0.
      * @see https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#header--footer
      */
+    #[\Deprecated(message: 'Will be removed in 2.0. Use Sensiolabs\GotenbergBundle\Builder\Behaviors\Chromium\PageMarginalTrait instead', since: 'sensiolabs/GotenbergBundle:1.4')]
     public function headerRaw(string $html): static
     {
-        @trigger_error(\sprintf('Since sensiolabs/gotenberg-bundle 1.2: "%s" is deprecated and will be removed in 2.0. Header/footer support has been moved to "%s"; this builder does not support it.', __METHOD__, PageMarginalTrait::class), \E_USER_DEPRECATED);
-
-        return $this;
+        return $this->withRawPart(Part::Header, $html);
     }
 
     /**
-     * @deprecated since 1.2, header/footer support has been moved to PageMarginalTrait. Will be removed in 2.0.
      * @see https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#header--footer
      *
      * @throws PartRenderingException if the file could not be loaded
      */
+    #[\Deprecated(message: 'Will be removed in 2.0. Use Sensiolabs\GotenbergBundle\Builder\Behaviors\Chromium\PageMarginalTrait instead', since: 'sensiolabs/GotenbergBundle:1.4')]
     public function headerFile(string $path): static
     {
-        @trigger_error(\sprintf('Since sensiolabs/gotenberg-bundle 1.2: "%s" is deprecated and will be removed in 2.0. Header/footer support has been moved to "%s"; this builder does not support it.', __METHOD__, PageMarginalTrait::class), \E_USER_DEPRECATED);
-
-        return $this;
+        return $this->withFilePart(Part::Header, $path);
     }
 
     /**
-     * @deprecated since 1.2, header/footer support has been moved to PageMarginalTrait. Will be removed in 2.0.
-     *
      * @param string               $template #Template
      * @param array<string, mixed> $context
      *
@@ -129,35 +120,30 @@ trait ContentTrait
         new ScalarNodeBuilder('template', required: true, restrictTo: 'string'),
         new ArrayNodeBuilder('context', normalizeKeys: false, prototype: 'variable'),
     ]))]
+    #[\Deprecated(message: 'Will be removed in 2.0. Use Sensiolabs\GotenbergBundle\Builder\Behaviors\Chromium\PageMarginalTrait instead', since: 'sensiolabs/GotenbergBundle:1.4')]
     public function footer(string $template, array $context = []): static
     {
-        @trigger_error(\sprintf('Since sensiolabs/gotenberg-bundle 1.2: "%s" is deprecated and will be removed in 2.0. Header/footer support has been moved to "%s"; this builder does not support it.', __METHOD__, PageMarginalTrait::class), \E_USER_DEPRECATED);
-
-        return $this;
+        return $this->withRenderedPart(Part::Footer, $template, $context);
     }
 
     /**
-     * @deprecated since 1.2, header/footer support has been moved to PageMarginalTrait. Will be removed in 2.0.
      * @see https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#header--footer
      */
+    #[\Deprecated(message: 'Will be removed in 2.0. Use Sensiolabs\GotenbergBundle\Builder\Behaviors\Chromium\PageMarginalTrait instead', since: 'sensiolabs/GotenbergBundle:1.4')]
     public function footerRaw(string $html): static
     {
-        @trigger_error(\sprintf('Since sensiolabs/gotenberg-bundle 1.2: "%s" is deprecated and will be removed in 2.0. Header/footer support has been moved to "%s"; this builder does not support it.', __METHOD__, PageMarginalTrait::class), \E_USER_DEPRECATED);
-
-        return $this;
+        return $this->withRawPart(Part::Footer, $html);
     }
 
     /**
-     * @deprecated since 1.2, header/footer support has been moved to PageMarginalTrait. Will be removed in 2.0.
      * @see https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#header--footer
      *
      * @throws PartRenderingException if the file could not be loaded
      */
+    #[\Deprecated(message: 'Will be removed in 2.0. Use Sensiolabs\GotenbergBundle\Builder\Behaviors\Chromium\PageMarginalTrait instead', since: 'sensiolabs/GotenbergBundle:1.4')]
     public function footerFile(string $path): static
     {
-        @trigger_error(\sprintf('Since sensiolabs/gotenberg-bundle 1.2: "%s" is deprecated and will be removed in 2.0. Header/footer support has been moved to "%s"; this builder does not support it.', __METHOD__, PageMarginalTrait::class), \E_USER_DEPRECATED);
-
-        return $this;
+        return $this->withFilePart(Part::Footer, $path);
     }
 
     /**
