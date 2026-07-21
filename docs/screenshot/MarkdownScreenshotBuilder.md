@@ -150,12 +150,6 @@ class YourController
 - [waitForExpression](#waitforexpressionstring-expression)
 - [waitForSelector](#waitforselectorstring-selector)
 - [contentRaw](#contentrawstring-html)
-- [footer](#footerstring-template-array-context)
-- [footerFile](#footerfilestring-path)
-- [footerRaw](#footerrawstring-html)
-- [header](#headerstring-template-array-context)
-- [headerFile](#headerfilestring-path)
-- [headerRaw](#headerrawstring-html)
 - [emulatedMediaFeatures](#emulatedmediafeaturesarray-emulatedmediafeatures)
 - [failOnConsoleExceptions](#failonconsoleexceptionsbool-bool)
 - [failOnHttpStatusCodes](#failonhttpstatuscodesarray-statuscodes)
@@ -559,30 +553,6 @@ return $gotenberg
     ->stream()
 ;
 ```
-
-### footer(string \$template, array \$context)
-> [!TIP]
-> See: [https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#header--footer](https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#header--footer)
-
-### footerFile(string \$path)
-> [!TIP]
-> See: [https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#header--footer](https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#header--footer)
-
-### footerRaw(string \$html)
-> [!TIP]
-> See: [https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#header--footer](https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#header--footer)
-
-### header(string \$template, array \$context)
-> [!TIP]
-> See: [https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#header--footer](https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#header--footer)
-
-### headerFile(string \$path)
-> [!TIP]
-> See: [https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#header--footer](https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#header--footer)
-
-### headerRaw(string \$html)
-> [!TIP]
-> See: [https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#header--footer](https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#header--footer)
 
 
 ### emulatedMediaFeatures(array \$emulatedMediaFeatures)
