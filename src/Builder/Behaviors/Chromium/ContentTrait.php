@@ -93,7 +93,6 @@ trait ContentTrait
 
     /**
      * @deprecated since 1.4, will be removed in 2.0. Use PageMarginalTrait instead.
-     *
      * @see https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#header--footer
      */
     public function headerRaw(string $html): static
@@ -105,7 +104,6 @@ trait ContentTrait
 
     /**
      * @deprecated since 1.4, will be removed in 2.0. Use PageMarginalTrait instead.
-     *
      * @see https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#header--footer
      *
      * @throws PartRenderingException if the file could not be loaded
@@ -140,7 +138,6 @@ trait ContentTrait
 
     /**
      * @deprecated since 1.4, will be removed in 2.0. Use PageMarginalTrait instead.
-     *
      * @see https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#header--footer
      */
     public function footerRaw(string $html): static
@@ -152,7 +149,6 @@ trait ContentTrait
 
     /**
      * @deprecated since 1.4, will be removed in 2.0. Use PageMarginalTrait instead.
-     *
      * @see https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#header--footer
      *
      * @throws PartRenderingException if the file could not be loaded
