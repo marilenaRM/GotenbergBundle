@@ -2,6 +2,7 @@
 
 namespace Sensiolabs\GotenbergBundle\Tests\Twig;
 
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Sensiolabs\GotenbergBundle\Builder\BuilderAssetInterface;
 use Sensiolabs\GotenbergBundle\Twig\GotenbergRuntime;
@@ -107,6 +108,31 @@ class GotenbergRuntimeTest extends TestCase
         $path = $runtime->getAssetUrl('image/origin.png');
 
         $this->assertSame('result.png', $path);
+    }
+
+    #[TestWith(['/build/front/my_file.css?v=abc123'])]
+    #[TestWith(['/build/front/my_file.css#abc123'])]
+    public function testGetAssetUrlWhenPackagesWithUrlSpecificCharactersString(string $assetPathUrl): void
+    {
+        $builder = $this->createMock(BuilderAssetInterface::class);
+        $builder->expects($this->once())
+            ->method('addAsset')
+            ->with('build/front/my_file.css')
+        ;
+
+        $packages = $this->createMock(Packages::class);
+        $packages->expects($this->once())
+            ->method('getUrl')
+            ->with('/build/front/my_file.css')
+            ->willReturn($assetPathUrl)
+        ;
+
+        $runtime = new GotenbergRuntime($packages, null);
+        $runtime->setBuilder($builder);
+
+        $path = $runtime->getAssetUrl('/build/front/my_file.css');
+
+        $this->assertSame('my_file.css', $path);
     }
 
     public function testGetAssetUrlWhenAssetMapperRepositoryAndPackages(): void
