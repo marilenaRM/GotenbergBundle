@@ -377,8 +377,7 @@ sensiolabs_gotenberg:
 - [UPGRADE FROM 1.0.0 to 1.1.0](./UPGRADE-1.1.md)
 - [UPGRADE FROM 1.1.0 to 1.2.0](./UPGRADE-1.2.md)
 - [UPGRADE FROM 1.2.0 to 1.3.0](./UPGRADE-1.3.md)
-
-[UPGRADE FROM 1.3.0 to 1.4.0](./UPGRADE-1.4.md)
+- [UPGRADE FROM 1.3.0 to 1.4.0](./UPGRADE-1.4.md)
 
 ## Credits
 

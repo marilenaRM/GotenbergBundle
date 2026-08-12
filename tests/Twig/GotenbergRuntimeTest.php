@@ -2,8 +2,8 @@
 
 namespace Sensiolabs\GotenbergBundle\Tests\Twig;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\TestWith;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Sensiolabs\GotenbergBundle\Builder\BuilderAssetInterface;
 use Sensiolabs\GotenbergBundle\Twig\GotenbergExtension;
@@ -215,9 +215,7 @@ class GotenbergRuntimeTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider provideFontRenderingCases
-     */
+    #[DataProvider('provideFontRenderingCases')]
     public function testFontRendering(string $template, string $expected): void
     {
         $builder = $this->createMock(BuilderAssetInterface::class);
