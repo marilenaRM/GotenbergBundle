@@ -151,6 +151,15 @@ Adds a file, like an image, font, stylesheet, and so on.<br /><br />By default, 
 > [!TIP]
 > See: [https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#assets](https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#assets)
 
+```php
+return $gotenberg
+    // Your builder call as ->html() and the rest of your configuration code
+    ->addAsset('../img/ceo.jpeg')
+    ->generate()
+    ->stream()
+;
+```
+
 ### assets(Stringable|string ...\$paths)
 Adds additional files, like images, fonts, stylesheets, and so on (overrides any previous files).<br /><br />By default, the assets files are fetch in the assets folder of your application.<br />If your assets are in another folder, you can override the default value of assets_directory in your<br />configuration file config/sensiolabs_gotenberg.yml.<br />
 
@@ -160,7 +169,7 @@ Adds additional files, like images, fonts, stylesheets, and so on (overrides any
 ```php
 return $gotenberg
     // Your builder call as ->html() and the rest of your configuration code
-    ->assets('../img/ceo.jpeg', __DIR__'/../../public/admin.jpeg')
+    ->assets('../img/ceo.jpeg', __DIR__.'/../../public/admin.jpeg')
     ->generate()
     ->stream()
 ;

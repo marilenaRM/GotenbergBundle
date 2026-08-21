@@ -361,6 +361,10 @@ class BuilderParser
                     $parsedDocBlock['tags']['see'],
                 )));
             }
+
+            if (isset($parsedDocBlock['tags']['example']) && [] !== $parsedDocBlock['tags']['example']) {
+                $this->parts['methods']['@'][$method->getShortName()]['tags']['example'] = $parsedDocBlock['tags']['example'];
+            }
         }
     }
 

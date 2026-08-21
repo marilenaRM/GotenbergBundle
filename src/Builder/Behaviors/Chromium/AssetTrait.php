@@ -25,7 +25,7 @@ trait AssetTrait
      *
      * @see https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#assets
      *
-     * @example assets('../img/ceo.jpeg', __DIR__'/../../public/admin.jpeg')
+     * @example assets('../img/ceo.jpeg', __DIR__.'/../../public/admin.jpeg')
      */
     public function assets(string|\Stringable ...$paths): static
     {
@@ -49,7 +49,7 @@ trait AssetTrait
      *
      * @see https://gotenberg.dev/docs/convert-with-chromium/convert-html-to-pdf#assets
      *
-     * @example addAsset('../img/ceo.jpeg', __DIR__'/../../public/admin.jpeg')
+     * @example addAsset('../img/ceo.jpeg')
      */
     public function addAsset(string|\Stringable $path): static
     {
