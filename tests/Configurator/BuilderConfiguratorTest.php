@@ -41,12 +41,21 @@ final class BuilderConfiguratorTest extends TestCase
      */
     public function testScreenshotHeaderAndFooterConfigurationTriggersTheMethodDeprecations(): void
     {
-        $configurator = new BuilderConfigurator([
-            HtmlScreenshotBuilder::class => [
-                'header' => ['method' => 'header', 'mustUseVariadic' => true, 'callback' => null],
-                'footer' => ['method' => 'footer', 'mustUseVariadic' => true, 'callback' => null],
-            ],
-        ], [
+        $mapping = [
+            'header' => ['method' => 'header', 'mustUseVariadic' => true, 'callback' => null],
+            'footer' => ['method' => 'footer', 'mustUseVariadic' => true, 'callback' => null],
+        ];
+
+        // Guard against drift: this literal must stay what BuilderStack actually derives from
+        // the #[WithConfigurationNode] attributes. The literal is only there because the real
+        // mapping types its callbacks too loosely for the constructor.
+        $builderStack = new BuilderStack();
+        $builderStack->push(HtmlScreenshotBuilder::class);
+        $derived = $builderStack->getConfigMapping()[HtmlScreenshotBuilder::class];
+        self::assertSame($mapping['header'], $derived['header']);
+        self::assertSame($mapping['footer'], $derived['footer']);
+
+        $configurator = new BuilderConfigurator([HtmlScreenshotBuilder::class => $mapping], [
             HtmlScreenshotBuilder::class => [
                 'header' => ['template' => 'templates/header.html.twig', 'context' => ['name' => 'John Doe']],
                 'footer' => ['template' => 'templates/footer.html.twig', 'context' => ['name' => 'John Doe']],
